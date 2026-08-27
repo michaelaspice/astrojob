@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JobFlow AI — AI-Assisted Job Search Workflow</title>
+<meta name="description" content="A small AI workflow case study showing how I use AI-assisted email organization to manage a real-world job search and what I am experimenting with next.">
+<style>
+:root{
+  --bg:#0d1015;
+  --panel:#151922;
+  --panel2:#1b202a;
+  --text:#f4f6fb;
+  --muted:#aeb5c3;
+  --line:#2b313d;
+  --accent:#d8c2ff;
+  --accent2:#b7d8ff;
+  --good:#bfe7d1;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 12% 10%, rgba(216,194,255,.10), transparent 25%),
+    radial-gradient(circle at 85% 0%, rgba(183,216,255,.08), transparent 22%),
+    var(--bg);
+  color:var(--text);
+  line-height:1.65;
+}
+.wrap{max-width:980px;margin:0 auto;padding:64px 24px 84px}
+.hero{padding:18px 0 32px}
+.badge{
+  display:inline-block;
+  padding:7px 11px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  color:var(--accent);
+  background:rgba(255,255,255,.02);
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.02em
+}
+h1{
+  font-size:clamp(44px,7vw,78px);
+  line-height:1;
+  letter-spacing:-.045em;
+  margin:18px 0 16px
+}
+h2{font-size:28px;line-height:1.2;margin:0 0 14px;letter-spacing:-.02em}
+h3{font-size:18px;margin:0 0 8px}
+p{color:var(--muted);font-size:17px;margin:0 0 14px}
+.lead{font-size:21px;max-width:780px}
+.small{font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:18px 0}
+.card{
+  background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.01)),var(--panel);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:24px;
+  box-shadow:0 14px 38px rgba(0,0,0,.16)
+}
+.kicker{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.13em;
+  color:var(--accent);
+  font-weight:800;
+  margin-bottom:8px
+}
+.now{
+  border-color:rgba(191,231,209,.28);
+  background:linear-gradient(180deg,rgba(191,231,209,.05),rgba(255,255,255,.01)),var(--panel)
+}
+.next{
+  border-color:rgba(216,194,255,.30);
+  background:linear-gradient(180deg,rgba(216,194,255,.05),rgba(255,255,255,.01)),var(--panel)
+}
+.flow{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-top:18px
+}
+.step{
+  background:var(--panel2);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px;
+  text-align:center;
+  font-size:14px;
+  color:var(--muted)
+}
+.step strong{display:block;color:var(--text);font-size:15px;margin-bottom:4px}
+ul{padding-left:20px;margin:10px 0 0;color:var(--muted)}
+li{margin:7px 0}
+strong{color:var(--text)}
+.pill{
+  display:inline-block;
+  margin:4px 6px 0 0;
+  padding:6px 9px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:var(--panel2);
+  color:var(--muted);
+  font-size:13px
+}
+.note{
+  margin-top:18px;
+  padding:16px 18px;
+  border-left:3px solid var(--accent2);
+  background:rgba(183,216,255,.05);
+  border-radius:10px;
+  color:var(--muted)
+}
+footer{
+  margin-top:54px;
+  padding-top:24px;
+  border-top:1px solid var(--line);
+  color:var(--muted);
+  font-size:14px
+}
+@media(max-width:760px){
+  .grid,.flow{grid-template-columns:1fr}
+  .wrap{padding-top:42px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="badge">AI workflow learning project</span>
+    <h1>JobFlow AI</h1>
+    <p class="lead">
+      A small experiment in using AI to organize a real-world job search — and to learn more about workflow design, automation, and practical AI use.
+    </p>
+  </header>
+
+  <section class="card">
+    <div class="kicker">The problem</div>
+    <h2>Job searches create a lot of repetitive admin</h2>
+    <p>
+      Application confirmations, interview messages, rejections, recruiter replies, and follow-ups all arrive in the same inbox.
+      When the volume grows, manually sorting and tracking everything becomes time-consuming and easy to lose control of.
+    </p>
+    <p>
+      I wanted a simple system that could reduce that friction and make important job-search messages easier to spot.
+    </p>
+  </section>
+
+  <div class="grid">
+    <section class="card now">
+      <div class="kicker">What I use today</div>
+      <h2>AI-assisted email organization</h2>
+      <p>
+        I currently use AI alongside email organization to help classify and label job-search messages such as:
+      </p>
+      <ul>
+        <li>application confirmations</li>
+        <li>interview or recruiter messages</li>
+        <li>rejections</li>
+        <li>messages that need a follow-up or action</li>
+      </ul>
+      <p style="margin-top:14px">
+        This gives me a much cleaner inbox and a faster way to understand where each application stands.
+      </p>
+    </section>
+
+    <section class="card next">
+      <div class="kicker">What I am building toward</div>
+      <h2>A more structured application workflow</h2>
+      <p>
+        The next version of the idea is to move from simple classification into a lightweight application operations system.
+      </p>
+      <ul>
+        <li>extract company and role automatically</li>
+        <li>detect interview dates and follow-up deadlines</li>
+        <li>sync structured information into a tracker</li>
+        <li>summarize application status and next action</li>
+        <li>report on stages and response rates</li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="card">
+    <div class="kicker">Workflow concept</div>
+    <h2>From inbox noise to useful signals</h2>
+    <div class="flow">
+      <div class="step"><strong>1. Email arrives</strong>Job-related message enters the inbox</div>
+      <div class="step"><strong>2. AI helps classify</strong>Message type and intent are identified</div>
+      <div class="step"><strong>3. Organized</strong>Label or status makes it easy to find</div>
+      <div class="step"><strong>4. Next action</strong>Follow-up or tracking becomes clearer</div>
+    </div>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <div class="kicker">Why I built it</div>
+      <h2>A real problem, not a demo for the sake of it</h2>
+      <p>
+        I wanted to experiment with AI on something I genuinely deal with every day.
+        The goal was not to build a complex product, but to see where AI could remove repetitive work and make an existing process more manageable.
+      </p>
+    </section>
+
+    <section class="card">
+      <div class="kicker">What I learned</div>
+      <h2>Useful AI can be simple</h2>
+      <p>
+        This project reinforced that AI does not need to be complicated to be useful.
+        Even a small layer of classification and organization can save time, reduce manual work, and make a workflow easier to maintain.
+      </p>
+    </section>
+  </div>
+
+  <section class="card">
+    <div class="kicker">Tools & learning</div>
+    <h2>What I used and explored</h2>
+    <div>
+      <span class="pill">Gmail</span>
+      <span class="pill">AI-assisted classification</span>
+      <span class="pill">Email labels</span>
+      <span class="pill">Workflow design</span>
+      <span class="pill">GitHub</span>
+      <span class="pill">GitHub Pages</span>
+    </div>
+    <div class="note">
+      Publishing this project was part of the learning process too. I created a public GitHub repository and used GitHub Pages for the first time to turn the workflow into a small public case study.
+    </div>
+  </section>
+
+  <footer>
+    Personal AI and workflow-automation learning project.
+  </footer>
+
+</div>
+</body>
+</html>
