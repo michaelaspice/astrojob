@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>🌌 AstroJob — Personal Job Search</title>
+  <title>🌌 AstroJob — Mission Control</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="app/board.css?v=20260904-5" />
+  <link rel="stylesheet" href="app/board.css?v=20260904-4" />
 </head>
 <body><div class="stars"></div><div class="planet planet-one"></div><div class="planet planet-two"></div>
   <div class="satellite-flight" aria-hidden="true" style="position:fixed;left:-140px;bottom:-100px;width:110px;height:72px;pointer-events:none;">
@@ -33,10 +33,7 @@
         <p class="subtitle astro-tagline">Built around one candidate. Designed around what matters.</p>
       </div>
       <div class="top-actions">
-        <button id="addJobButton" class="button primary">＋ Add job</button>
-        <button id="exportButton" class="button secondary">Export backup</button>
-        <button id="importButton" class="button secondary">Import</button>
-        <input id="importFile" type="file" accept="application/json" hidden>
+        <button id="resetDemo" class="button secondary">Reset demo</button>
       </div>
     </header>
     <section class="stats" id="stats" aria-label="Board summary"></section>
@@ -50,12 +47,7 @@
     </section>
     <nav class="tabs" id="tabs" aria-label="Application status"></nav>
     <section id="jobsGrid" class="jobs-grid" aria-live="polite"></section>
-    <div id="emptyState" class="empty-state" hidden>
-      <strong>No jobs here yet.</strong>
-      <span>Add a role and AstroJob will score it against your profile and hard rules.</span>
-      <button id="emptyAddButton" class="button primary">＋ Add your first job</button>
-      <button id="loadDemoButton" class="button secondary">Load demo jobs</button>
-    </div>
+    <div id="emptyState" class="empty-state" hidden>No jobs match these filters.</div>
   </main>
   <template id="jobCardTemplate">
     <article class="job-card">
@@ -67,57 +59,9 @@
       <div class="scores"><div class="score"><span>Fit</span><strong class="fit-score"></strong></div><div class="score"><span>Desirability</span><strong class="desirability-score"></strong></div><div class="score"><span>Priority</span><strong class="priority-score"></strong></div></div>
       <div class="salary-row"></div><div class="flags"></div>
       <details class="match-details"><summary>Why this match</summary><div class="details-grid"><div><h3>Strong signals</h3><ul class="reasons-list"></ul></div><div><h3>Watch-outs</h3><ul class="gaps-list"></ul></div></div></details>
-      <div class="job-notes-preview"></div>
-      <div class="card-actions">
-        <a class="button primary apply-link" target="_blank" rel="noopener">Open job</a>
-        <button class="button secondary edit-job">Edit</button>
-        <select class="status-select" aria-label="Update job status">
-          <option value="new">New</option><option value="saved">Saved</option><option value="applied">Applied</option><option value="screening">Screening</option><option value="interview">Interview</option><option value="offer">Offer</option><option value="rejected">Rejected / Skipped</option><option value="withdrawn">Withdrawn</option>
-        </select>
-      </div>
+      <div class="card-actions"><a class="button primary apply-link" target="_blank" rel="noopener">Open job</a><select class="status-select" aria-label="Update job status"><option value="new">New</option><option value="saved">Saved</option><option value="applied">Applied</option><option value="interview">Interview</option><option value="rejected">Rejected / Skipped</option></select></div>
     </article>
   </template>
-
-  <dialog id="jobDialog" class="job-dialog">
-    <form id="jobForm" method="dialog">
-      <div class="dialog-head">
-        <div>
-          <div class="eyebrow">ASTROJOB INPUT</div>
-          <h2 id="dialogTitle">Add a job</h2>
-        </div>
-        <button type="button" id="closeDialog" class="icon-button" aria-label="Close">×</button>
-      </div>
-
-      <input type="hidden" id="jobId">
-      <div class="form-grid">
-        <label class="wide">Job URL<input id="jobUrl" type="url" placeholder="https://..." /></label>
-        <label>Job title<input id="jobTitle" required /></label>
-        <label>Company<input id="jobCompany" required /></label>
-        <label>Country<input id="jobCountry" required placeholder="Poland" /></label>
-        <label>City<input id="jobCity" placeholder="Warsaw" /></label>
-        <label>Work model<select id="jobWorkModel"><option>On-site</option><option>Hybrid</option><option selected>Remote</option></select></label>
-        <label>Posted date<input id="jobPostedAt" type="date" /></label>
-        <label>Renewed / reposted<input id="jobRenewedAt" type="date" /></label>
-        <label>Salary currency<select id="jobCurrency"><option value="">Undisclosed</option><option>PLN</option><option>EUR</option><option>USD</option><option>GBP</option></select></label>
-        <label>Monthly gross<input id="jobMonthly" type="number" min="0" step="1" placeholder="10000" /></label>
-        <label>Annual gross<input id="jobAnnual" type="number" min="0" step="1" placeholder="120000" /></label>
-        <label>Personal interest<select id="jobInterest"><option value="love">Love this</option><option value="positive" selected>Interested</option><option value="neutral">Neutral</option><option value="low">Not excited</option></select></label>
-        <label>Next action date<input id="jobNextAction" type="date" /></label>
-        <label class="wide">Languages mentioned<input id="jobLanguages" placeholder="English, Romanian" /></label>
-        <label class="wide">Description / requirements<textarea id="jobDescription" rows="8" placeholder="Paste the job description here. AstroJob scores this text."></textarea></label>
-        <label class="wide">Your notes<textarea id="jobNotes" rows="4" placeholder="Recruiter, salary discussion, interview notes, concerns, follow-up..."></textarea></label>
-      </div>
-      <div class="dialog-score" id="dialogScore">Fill in the role and AstroJob will score it when you save.</div>
-      <div class="dialog-actions">
-        <button type="button" id="deleteJobButton" class="button danger" hidden>Delete</button>
-        <div class="dialog-actions-right">
-          <button type="button" id="cancelDialog" class="button secondary">Cancel</button>
-          <button type="submit" class="button primary">Save & score</button>
-        </div>
-      </div>
-    </form>
-  </dialog>
-
-  <script type="module" src="app/board.js?v=20260904-2"></script>
+  <script type="module" src="app/board.js"></script>
 </body>
 </html>
