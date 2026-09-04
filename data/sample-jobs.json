@@ -1,11 +1,162 @@
 [
-  {"id":"j1","title":"Customer Success Enablement Manager","company":"NovaTech","city":"Warsaw","country":"Poland","workModel":"hybrid","postedAt":"2026-09-02","industry":"SaaS","description":"Customer success enablement, playbooks, coaching, CRM, Salesforce, HubSpot, analytics, retention and cross-functional operations.","languages":["English"],"salary":{},"url":"#"},
-  {"id":"j2","title":"Customer Excellence Specialist","company":"OrbitPay","city":"Krakow","country":"Poland","workModel":"hybrid","postedAt":"2026-09-01","industry":"Fintech","description":"Customer excellence, escalations, customer experience, KPI reporting, process improvement and Zendesk.","languages":["English"],"salary":{"currency":"PLN","monthlyGross":12500},"url":"#"},
-  {"id":"j3","title":"Customer Support Operations Lead","company":"Helios","city":"Athens","country":"Greece","workModel":"hybrid","postedAt":"2026-08-29","description":"Lead customer support operations, coaching, CSAT, quality assurance, workflows, CRM and service delivery.","languages":["Greek","English"],"salary":{"currency":"EUR","annualGross":32000},"url":"#"},
-  {"id":"j4","title":"Client Operations Manager","company":"Cosmos Group","city":"Chisinau","country":"Moldova","workModel":"onsite","postedAt":"2026-08-31","description":"Client operations, account management, onboarding, team leadership and process improvement.","languages":["Romanian","Russian","English"],"salary":{"currency":"EUR","annualGross":18000},"url":"#"},
-  {"id":"j5","title":"Customer Success Manager","company":"Andromeda","city":"Barcelona","country":"Spain","workModel":"remote","postedAt":"2026-09-03","description":"Customer success, onboarding, renewals, retention, CRM and enterprise clients.","languages":["English"],"salary":{"currency":"EUR","annualGross":42000},"url":"#"},
-  {"id":"j6","title":"Technical Customer Analyst","company":"BlackHole Labs","city":"Warsaw","country":"Poland","workModel":"hybrid","postedAt":"2026-09-02","description":"Customer analytics role. Advanced Python required. Build production Python pipelines daily.","languages":["English"],"salary":{"currency":"PLN","annualGross":180000},"url":"#"},
-  {"id":"j7","title":"Customer Success Manager - German","company":"Nebula GmbH","city":"Berlin","country":"Germany","workModel":"remote","postedAt":"2026-09-02","description":"Customer success and renewals. Fluent German required, English helpful.","languages":["German","English"],"salary":{"currency":"EUR","annualGross":52000},"url":"#"},
-  {"id":"j8","title":"Senior Customer Operations Manager","company":"OldStar","city":"Warsaw","country":"Poland","workModel":"hybrid","postedAt":"2026-07-20","description":"Customer operations, leadership, quality, onboarding, CRM.","languages":["English"],"salary":{},"url":"#"},
-  {"id":"j9","title":"Head of Customer Experience","company":"Supernova","city":"Warsaw","country":"Poland","workModel":"hybrid","postedAt":"2026-08-01","renewedAt":"2026-09-01","description":"Head of customer experience, team leadership, customer success strategy, CSAT, retention, process improvement, CRM and analytics.","languages":["English"],"salary":{},"url":"#"}
+  {
+    "id": "j1",
+    "title": "Customer Success Enablement Manager",
+    "company": "NovaTech",
+    "city": "Warsaw",
+    "country": "Poland",
+    "workModel": "hybrid",
+    "postedAt": "2026-09-02",
+    "industry": "SaaS",
+    "description": "Customer success enablement, playbooks, coaching, CRM, Salesforce, HubSpot, analytics, retention and cross-functional operations. At least 5 years of relevant experience. English required. Experience with Salesforce and HubSpot.",
+    "languages": [
+      "English"
+    ],
+    "salary": {},
+    "url": "#"
+  },
+  {
+    "id": "j2",
+    "title": "Customer Excellence Specialist",
+    "company": "OrbitPay",
+    "city": "Krakow",
+    "country": "Poland",
+    "workModel": "hybrid",
+    "postedAt": "2026-09-01",
+    "industry": "Fintech",
+    "description": "Customer excellence, escalations, customer experience, KPI reporting, process improvement and Zendesk.",
+    "languages": [
+      "English"
+    ],
+    "salary": {
+      "currency": "PLN",
+      "monthlyGross": 12500
+    },
+    "url": "#"
+  },
+  {
+    "id": "j3",
+    "title": "Customer Support Operations Lead",
+    "company": "Helios",
+    "city": "Athens",
+    "country": "Greece",
+    "workModel": "hybrid",
+    "postedAt": "2026-08-29",
+    "description": "Lead customer support operations, coaching, CSAT, quality assurance, workflows, CRM and service delivery.",
+    "languages": [
+      "Greek",
+      "English"
+    ],
+    "salary": {
+      "currency": "EUR",
+      "annualGross": 32000
+    },
+    "url": "#"
+  },
+  {
+    "id": "j4",
+    "title": "Client Operations Manager",
+    "company": "Cosmos Group",
+    "city": "Chisinau",
+    "country": "Moldova",
+    "workModel": "onsite",
+    "postedAt": "2026-08-31",
+    "description": "Client operations, account management, onboarding, team leadership and process improvement.",
+    "languages": [
+      "Romanian",
+      "Russian",
+      "English"
+    ],
+    "salary": {
+      "currency": "EUR",
+      "annualGross": 18000
+    },
+    "url": "#"
+  },
+  {
+    "id": "j5",
+    "title": "Customer Success Manager",
+    "company": "Andromeda",
+    "city": "Barcelona",
+    "country": "Spain",
+    "workModel": "remote",
+    "postedAt": "2026-09-03",
+    "description": "Customer success, onboarding, renewals, retention, CRM and enterprise clients. 3+ years of experience in customer success. English required. Experience with Salesforce and SynXis CRS.",
+    "languages": [
+      "English"
+    ],
+    "salary": {
+      "currency": "EUR",
+      "annualGross": 42000
+    },
+    "url": "#"
+  },
+  {
+    "id": "j6",
+    "title": "Technical Customer Analyst",
+    "company": "BlackHole Labs",
+    "city": "Warsaw",
+    "country": "Poland",
+    "workModel": "hybrid",
+    "postedAt": "2026-09-02",
+    "description": "Customer analytics role. Advanced Python required. Build production Python pipelines daily.",
+    "languages": [
+      "English"
+    ],
+    "salary": {
+      "currency": "PLN",
+      "annualGross": 180000
+    },
+    "url": "#"
+  },
+  {
+    "id": "j7",
+    "title": "Customer Success Manager - German",
+    "company": "Nebula GmbH",
+    "city": "Berlin",
+    "country": "Germany",
+    "workModel": "remote",
+    "postedAt": "2026-09-02",
+    "description": "Customer success and renewals. Fluent German required, English helpful.",
+    "languages": [
+      "German",
+      "English"
+    ],
+    "salary": {
+      "currency": "EUR",
+      "annualGross": 52000
+    },
+    "url": "#"
+  },
+  {
+    "id": "j8",
+    "title": "Senior Customer Operations Manager",
+    "company": "OldStar",
+    "city": "Warsaw",
+    "country": "Poland",
+    "workModel": "hybrid",
+    "postedAt": "2026-07-20",
+    "description": "Customer operations, leadership, quality, onboarding, CRM.",
+    "languages": [
+      "English"
+    ],
+    "salary": {},
+    "url": "#"
+  },
+  {
+    "id": "j9",
+    "title": "Head of Customer Experience",
+    "company": "Supernova",
+    "city": "Warsaw",
+    "country": "Poland",
+    "workModel": "hybrid",
+    "postedAt": "2026-08-01",
+    "renewedAt": "2026-09-01",
+    "description": "Head of customer experience, team leadership, customer success strategy, CSAT, retention, process improvement, CRM and analytics. 7+ years of relevant experience. English required. Power BI preferred.",
+    "languages": [
+      "English"
+    ],
+    "salary": {},
+    "url": "#"
+  }
 ]
