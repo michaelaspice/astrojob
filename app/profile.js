@@ -27,6 +27,14 @@ export const MIHAELA_PROFILE = {
     'salesforce','hubspot','pipedrive','zendesk','kustomer','crm','excel','google sheets','looker studio','zapier','automation','analytics'
   ],
   languages: ['romanian','russian','english','greek'],
+  relevantExperienceYears: 7,
+  supportedSeniority: ['analyst','specialist','senior','lead','manager','head'],
+  profileSkills: [
+    'customer success','customer experience','onboarding','implementation','account management','renewals','retention',
+    'escalation management','stakeholder management','team leadership','coaching','performance management','kpi management',
+    'csat','quality assurance','process improvement','sops & playbooks','sales operations','crm operations','data analysis',
+    'automation','project management'
+  ],
   hardLanguagePolicy: 'REJECT_UNSUPPORTED_REQUIRED_LANGUAGE',
   hardTechnicalRejects: ['python required','advanced python required','strong python required','proficiency in python required'],
   acceptableTechnicalNiceToHaves: ['sql','python','data analysis','business intelligence','api','automation'],
