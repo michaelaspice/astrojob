@@ -10,6 +10,22 @@
   <link rel="stylesheet" href="app/board.css" />
 </head>
 <body><div class="stars"></div><div class="planet planet-one"></div><div class="planet planet-two"></div>
+  <div class="satellite-flight" aria-hidden="true">
+    <svg class="satellite" viewBox="0 0 140 90" role="presentation">
+      <defs>
+        <linearGradient id="satBody" x1="0" x2="1"><stop offset="0" stop-color="#d9d5ef"/><stop offset="1" stop-color="#8576ba"/></linearGradient>
+        <linearGradient id="satPanel" x1="0" x2="1"><stop offset="0" stop-color="#7b63cf"/><stop offset="1" stop-color="#35285f"/></linearGradient>
+      </defs>
+      <g transform="translate(70 45) rotate(-18)">
+        <rect x="-22" y="-12" width="44" height="24" rx="7" fill="url(#satBody)" stroke="#f1c7ee" stroke-opacity=".45"/>
+        <circle cx="0" cy="0" r="8" fill="#2f2748" stroke="#c9b9ff" stroke-width="2"/>
+        <rect x="-61" y="-15" width="31" height="30" rx="3" fill="url(#satPanel)" stroke="#b8a8ff" stroke-opacity=".5"/>
+        <rect x="30" y="-15" width="31" height="30" rx="3" fill="url(#satPanel)" stroke="#b8a8ff" stroke-opacity=".5"/>
+        <path d="M-30 0H-22M22 0H30M0-12V-25" stroke="#d6cff4" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="0" cy="-29" r="5" fill="#f0b7dc"/>
+      </g>
+    </svg>
+  </div>
   <main class="shell">
     <header class="topbar">
       <div>
