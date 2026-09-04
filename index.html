@@ -3,11 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>🌌 AstroJob — Mission Control</title>
+  <title>AstroJob — Mission Control Demo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="app/board.css?v=20260904-4" />
+  <link rel="stylesheet" href="app/board.css?v=20260904-demo-intel" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop stop-color='%23f6b7ff'/%3E%3Cstop offset='.55' stop-color='%23936cff'/%3E%3Cstop offset='1' stop-color='%233c2b78'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='15' fill='url(%23g)'/%3E%3Cellipse cx='32' cy='32' rx='28' ry='10' fill='none' stroke='%23d9c4ff' stroke-width='3' transform='rotate(-15 32 32)'/%3E%3Ccircle cx='49' cy='19' r='2' fill='%23fff'/%3E%3C/svg%3E">
 </head>
 <body><div class="stars"></div><div class="planet planet-one"></div><div class="planet planet-two"></div>
   <div class="satellite-flight" aria-hidden="true" style="position:fixed;left:-140px;bottom:-100px;width:110px;height:72px;pointer-events:none;">
@@ -58,10 +59,25 @@
       </div>
       <div class="scores"><div class="score"><span>Fit</span><strong class="fit-score"></strong></div><div class="score"><span>Desirability</span><strong class="desirability-score"></strong></div><div class="score"><span>Priority</span><strong class="priority-score"></strong></div></div>
       <div class="salary-row"></div><div class="flags"></div>
+      <div class="intel-panel">
+        <div class="intel-scores">
+          <div><span>Tech fit</span><strong class="tech-fit">—</strong></div>
+          <div><span>Role fit</span><strong class="role-fit">—</strong></div>
+          <div><span>Seniority fit</span><strong class="seniority-fit">—</strong></div>
+          <div><span>Language fit</span><strong class="language-fit">—</strong></div>
+        </div>
+        <div class="intel-section"><h3>Tech Stack / Systems</h3><div class="tech-badges intel-badges"></div></div>
+        <div class="intel-columns">
+          <div><h3>Matched Skills</h3><div class="matched-badges intel-badges"></div></div>
+          <div><h3>Languages Mentioned</h3><div class="language-badges intel-badges"></div></div>
+          <div><h3>Mentioned Experience</h3><div class="experience-badges intel-badges"></div></div>
+        </div>
+        <div class="intel-section gap-section"><h3>Gaps to Fill</h3><div class="gap-badges intel-badges"></div></div>
+      </div>
       <details class="match-details"><summary>Why this match</summary><div class="details-grid"><div><h3>Strong signals</h3><ul class="reasons-list"></ul></div><div><h3>Watch-outs</h3><ul class="gaps-list"></ul></div></div></details>
       <div class="card-actions"><a class="button primary apply-link" target="_blank" rel="noopener">Open job</a><select class="status-select" aria-label="Update job status"><option value="new">New</option><option value="saved">Saved</option><option value="applied">Applied</option><option value="interview">Interview</option><option value="rejected">Rejected / Skipped</option></select></div>
     </article>
   </template>
-  <script type="module" src="app/board.js"></script>
+  <script type="module" src="app/board.js?v=20260904-demo-intel"></script>
 </body>
 </html>
