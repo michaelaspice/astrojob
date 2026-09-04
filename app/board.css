@@ -210,3 +210,22 @@ button,select,input,.apply-link{border-color:var(--line)!important}
 .intel-section.gap-section{margin-top:24px;padding-top:18px;border-top:1px solid rgba(154,123,255,.13)}
 @media(max-width:900px){.intel-columns{gap:18px}}
 @media(max-width:700px){.intel-panel{padding:17px}.intel-scores{grid-template-columns:repeat(2,1fr)}.intel-columns{grid-template-columns:1fr;gap:20px}.intel-section.gap-section{margin-top:20px}}
+
+
+/* Candidate profile — explains the personalization behind demo scores */
+.top-actions{display:flex;gap:10px;align-items:center}
+.profile-button{border-color:rgba(155,123,255,.38)!important;background:linear-gradient(135deg,rgba(155,123,255,.14),rgba(85,216,255,.08))!important}
+.profile-context{display:flex;align-items:center;gap:8px;margin:24px 0 -14px;padding:10px 13px;width:max-content;max-width:100%;border:1px solid rgba(154,123,255,.18);border-radius:999px;background:rgba(14,20,50,.58);font-size:11px;color:var(--muted)}
+.profile-context strong{color:#eeeaff;font-weight:600}.profile-context button{border:0;background:none;color:#bdaeff;cursor:pointer;padding:0 2px;font-weight:600;font-size:11px}
+.profile-backdrop{position:fixed;inset:0;background:rgba(2,3,12,.62);backdrop-filter:blur(3px);z-index:40;opacity:0;transition:opacity .22s ease}.profile-backdrop.open{opacity:1}
+.profile-drawer{position:fixed;z-index:41;right:0;top:0;height:100vh;width:min(520px,94vw);overflow:auto;padding:30px;background:linear-gradient(180deg,rgba(15,18,49,.985),rgba(8,11,31,.99));border-left:1px solid rgba(155,123,255,.3);box-shadow:-30px 0 80px rgba(0,0,0,.42);transform:translateX(105%);transition:transform .28s cubic-bezier(.2,.75,.2,1)}
+.profile-drawer.open{transform:translateX(0)}body.profile-open{overflow:hidden}
+.profile-drawer-head{display:flex;justify-content:space-between;gap:24px;align-items:flex-start;padding-bottom:22px;border-bottom:1px solid rgba(155,123,255,.16)}
+.profile-drawer-head h2{font-size:30px;margin:8px 0 6px;letter-spacing:-.04em}.profile-drawer-head p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+.profile-close{flex:0 0 38px;width:38px;height:38px;border-radius:50%;border:1px solid rgba(155,123,255,.22);background:rgba(255,255,255,.035);color:#fff;font-size:25px;cursor:pointer}
+.profile-demo-note{margin:18px 0 4px;padding:10px 12px;border-radius:10px;background:rgba(155,123,255,.08);border:1px solid rgba(155,123,255,.14);color:#c8c0e6;font-size:10px}
+.profile-block{padding:18px 0;border-bottom:1px solid rgba(155,123,255,.12)}.profile-block h3{margin:0 0 10px;text-transform:uppercase;letter-spacing:.09em;font-size:10px;color:#aeb5ce}.profile-block p{margin:0;color:#e2e2ee;font-size:12px;line-height:1.55}
+.profile-two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}.profile-two-col .profile-block{min-width:0}
+.profile-chips{display:flex;flex-wrap:wrap;gap:7px}.profile-chips span{padding:6px 9px;border-radius:999px;border:1px solid rgba(85,216,255,.22);background:rgba(85,216,255,.055);color:#c9f6ff;font-size:10px}.profile-chips.tech span{border-color:rgba(155,123,255,.24);background:rgba(155,123,255,.07);color:#e1d8ff}.profile-chips.learning span{border-color:rgba(255,209,102,.24);background:rgba(255,209,102,.06);color:#ffe2a0}
+.profile-block.scoring>div{display:grid;grid-template-columns:90px 1fr;gap:10px;margin-top:9px;font-size:11px}.profile-block.scoring b{color:#e6deff}.profile-block.scoring span{color:var(--muted)}
+@media(max-width:600px){.top-actions{width:100%;flex-wrap:wrap}.top-actions .button{flex:1}.profile-context{border-radius:14px;flex-wrap:wrap}.profile-drawer{padding:22px}.profile-two-col{grid-template-columns:1fr;gap:0}}
