@@ -189,3 +189,12 @@ button,select,input,.apply-link{border-color:var(--line)!important}
 @media(prefers-reduced-motion:reduce){
   .astro-title{animation:none;background-position:50% 0}
 }
+
+.astro-title{
+  font-size:clamp(42px,7vw,76px);
+  letter-spacing:.08em;
+}
+.astro-tagline{
+  margin-top:.65rem;
+  font-size:clamp(15px,1.7vw,19px);
+}
