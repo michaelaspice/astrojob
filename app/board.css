@@ -189,3 +189,24 @@ button,select,input,.apply-link{border-color:var(--line)!important}
 @media(prefers-reduced-motion:reduce){
   .astro-title{animation:none;background-position:50% 0}
 }
+
+
+/* Demo Intelligence Layer */
+.intel-panel{padding:22px 22px 24px;margin:20px 0 8px;border:1px solid rgba(154,123,255,.18);border-radius:14px;background:rgba(5,7,22,.3)}
+.intel-scores{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.intel-scores>div{padding:9px 10px;border:1px solid rgba(255,255,255,.06);border-radius:10px;background:rgba(255,255,255,.025)}
+.intel-scores span{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.intel-scores strong{display:block;margin-top:3px;font-size:17px}
+.intel-panel h3{margin:0 0 10px;font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:#aeb5ce}
+.intel-badges{display:flex;flex-wrap:wrap;gap:8px;row-gap:9px}
+.intel-badge{padding:6px 10px;border-radius:999px;font-size:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035)}
+.intel-badge.match{color:#bff5ff;border-color:rgba(85,216,255,.28)}
+.intel-badge.transfer{color:#e5c5ff;border-color:rgba(196,108,255,.3)}
+.intel-badge.learning{color:#ffe1a6;border-color:rgba(255,213,128,.3)}
+.intel-badge.gap{color:#ffb8b8;border-color:rgba(255,122,122,.28)}
+.intel-columns{display:grid;grid-template-columns:1.05fr 1.05fr 1.1fr;gap:28px;margin-top:20px;align-items:start}
+.intel-columns>div{min-width:0}
+.intel-empty{font-size:10px;color:#707995}
+.intel-section.gap-section{margin-top:24px;padding-top:18px;border-top:1px solid rgba(154,123,255,.13)}
+@media(max-width:900px){.intel-columns{gap:18px}}
+@media(max-width:700px){.intel-panel{padding:17px}.intel-scores{grid-template-columns:repeat(2,1fr)}.intel-columns{grid-template-columns:1fr;gap:20px}.intel-section.gap-section{margin-top:20px}}
