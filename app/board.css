@@ -159,3 +159,33 @@ button,select,input,.apply-link{border-color:var(--line)!important}
 }
 @media(max-width:700px){.satellite-flight{width:86px;height:56px;animation-duration:15s}}
 @media(prefers-reduced-motion:reduce){.satellite-flight{display:none}}
+
+/* AstroJob title hierarchy */
+.astro-title{
+  font-size:clamp(28px,4vw,48px);
+  line-height:1;
+  font-weight:800;
+  letter-spacing:.12em;
+  color:transparent;
+  background:linear-gradient(105deg,#f4efff 0%,#f4efff 38%,#d9b8ff 46%,#fff 50%,#f0a9db 54%,#f4efff 62%,#f4efff 100%);
+  background-size:240% 100%;
+  background-position:120% 0;
+  -webkit-background-clip:text;
+  background-clip:text;
+  animation:astroTitleSweep 12s ease-in-out infinite;
+}
+.mission-title{
+  font-size:clamp(20px,2.4vw,30px);
+  line-height:1.15;
+  margin:.42rem 0 .55rem;
+  font-weight:600;
+  letter-spacing:-.025em;
+}
+@keyframes astroTitleSweep{
+  0%,8%{background-position:120% 0}
+  24%{background-position:-120% 0}
+  100%{background-position:-120% 0}
+}
+@media(prefers-reduced-motion:reduce){
+  .astro-title{animation:none;background-position:50% 0}
+}
