@@ -96,29 +96,3 @@ button,select,input,.apply-link{border-color:var(--line)!important}
   .details-grid { grid-template-columns:1fr; }
   .card-actions { grid-template-columns:1fr; }
 }
-.satellite-flight{
-  position:fixed;
-  left:-140px;
-  bottom:-100px;
-  width:110px;
-  height:72px;
-  z-index:-1;
-  pointer-events:none;
-  opacity:.86;
-  filter:drop-shadow(0 0 14px rgba(202,157,255,.28));
-  animation:satellitePass 14s linear infinite;
-}
-.satellite{width:100%;height:100%;display:block}
-@keyframes satellitePass{
-  0%{transform:translate(0,0) rotate(-8deg);opacity:0}
-  2%{opacity:.88}
-  26%{transform:translate(calc(100vw + 260px),calc(-100vh - 220px)) rotate(8deg);opacity:.88}
-  29%{opacity:0}
-  100%{transform:translate(calc(100vw + 260px),calc(-100vh - 220px)) rotate(8deg);opacity:0}
-}
-@media(max-width:700px){
-  .satellite-flight{width:86px;height:56px;animation-duration:15s}
-}
-@media(prefers-reduced-motion:reduce){
-  .satellite-flight{display:none}
-}
