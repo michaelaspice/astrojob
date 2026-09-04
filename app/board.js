@@ -128,6 +128,48 @@ function renderCard(job) {
     const span = document.createElement('span'); span.className = 'flag'; span.textContent = job.score.hardReject; flags.appendChild(span);
   }
 
+  const intel = job.score.intelligence || {};
+  const pct = v => Number.isFinite(v) ? v + '%' : '—';
+  node.querySelector('.tech-fit').textContent = pct(intel.techFit);
+  node.querySelector('.role-fit').textContent = pct(intel.roleFit);
+  node.querySelector('.seniority-fit').textContent = pct(intel.seniorityFit);
+  node.querySelector('.language-fit').textContent = pct(intel.languageFit);
+
+  const badgeList = (selector, items, type) => {
+    const box = node.querySelector(selector);
+    if (!items?.length) { box.innerHTML = '<span class="intel-empty">None detected</span>'; return; }
+    items.forEach(item => {
+      const span = document.createElement('span');
+      span.className = 'intel-badge ' + type;
+      span.textContent = item;
+      box.appendChild(span);
+    });
+  };
+
+  const techBox = node.querySelector('.tech-badges');
+  const techItems = [
+    ...(intel.matchedTech || []).map(x => [x,'match']),
+    ...(intel.learningTech || []).map(x => [x + ' · learning','learning']),
+    ...(intel.transferableTech || []).map(x => [x + ' · transferable','transfer']),
+    ...(intel.techGaps || []).map(x => [x + ' · review','gap'])
+  ];
+  if (!techItems.length) techBox.innerHTML = '<span class="intel-empty">No named systems detected</span>';
+  else techItems.forEach(([label,type]) => {
+    const span = document.createElement('span');
+    span.className = 'intel-badge ' + type;
+    span.textContent = label;
+    techBox.appendChild(span);
+  });
+
+  badgeList('.matched-badges', intel.matchedSkills, 'match');
+  const langItems = (intel.mentionedLanguages || []).map(x => {
+    const label = x.charAt(0).toUpperCase() + x.slice(1);
+    return (intel.knownLanguages || []).includes(x) ? label : label + ' · missing';
+  });
+  badgeList('.language-badges', langItems, 'match');
+  badgeList('.experience-badges', intel.mentionedExperience, 'transfer');
+  badgeList('.gap-badges', intel.gaps, 'gap');
+
   const reasons = node.querySelector('.reasons-list');
   const reasonItems = job.score.reasons?.length ? job.score.reasons : ['Passed hard filters; no strong positive signal detected yet.'];
   reasonItems.forEach(r => { const li = document.createElement('li'); li.textContent = r; reasons.appendChild(li); });
