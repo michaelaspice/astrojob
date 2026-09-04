@@ -46,6 +46,73 @@ function unsupportedHardLanguage(text, profile){
   return null;
 }
 
+
+const TECH=[
+ ['Salesforce',['salesforce']],['HubSpot',['hubspot']],['Pipedrive',['pipedrive']],['Zendesk',['zendesk']],['Kustomer',['kustomer']],['Jira',['jira']],['SQL',['sql']],['Excel',['excel']],['Google Sheets',['google sheets']],['Looker Studio',['looker studio']],['Power BI',['power bi']],['Tableau',['tableau']],['Zapier',['zapier']],['Coupler.io',['coupler']],['Parabola',['parabola']],['Amadeus',['amadeus']],['Sabre',['sabre']],['Asana',['asana']],['Monday.com',['monday.com']],['Trello',['trello']],['Outreach',['outreach']],['SynXis CRS',['synxis crs','synxis']]
+];
+const OWNED_TECH=new Set(['Salesforce','HubSpot','Pipedrive','Zendesk','Kustomer','Jira','Excel','Google Sheets','Looker Studio','Zapier','Coupler.io','Parabola','Amadeus','Sabre','Asana','Monday.com','Trello','Outreach']);
+const LEARNING_TECH=new Set(['SQL']);
+const ADJACENT_TECH=new Set(['Power BI','Tableau']);
+const SKILLS=[
+ ['Customer Success',['customer success']],['Onboarding',['onboarding']],['Implementation',['implementation']],['Account Management',['account management']],['Renewals',['renewal']],['Retention',['retention','churn']],['Escalation Management',['escalation']],['Stakeholder Management',['stakeholder']],['Team Leadership',['team leadership','team lead','people management']],['Coaching',['coaching']],['KPI Management',['kpi']],['CSAT',['csat','customer satisfaction']],['Quality Assurance',['quality assurance']],['Process Improvement',['process improvement']],['SOPs & Playbooks',['sop','playbook']],['Sales Operations',['sales operations']],['Revenue Operations',['revenue operations','revops']],['CRM Operations',['crm operations']],['Data Analysis',['data analysis','analytics']],['Automation',['automation']],['Project Management',['project management','project manager']],['Program Management',['program management','program manager']]
+];
+const TRANSFER_SKILLS=new Set(['Revenue Operations','Program Management']);
+function intelligenceFor(job,profile){
+ const text=textFor(job);
+ const tech=TECH.filter(([,terms])=>terms.some(t=>text.includes(t))).map(([name])=>name);
+ const matchedTech=tech.filter(x=>OWNED_TECH.has(x));
+ const learningTech=tech.filter(x=>LEARNING_TECH.has(x));
+ const transferableTech=tech.filter(x=>ADJACENT_TECH.has(x));
+ const techGaps=tech.filter(x=>!OWNED_TECH.has(x)&&!LEARNING_TECH.has(x)&&!ADJACENT_TECH.has(x));
+
+ const skills=SKILLS.filter(([,terms])=>terms.some(t=>text.includes(t))).map(([name])=>name);
+ const profileSkills=new Set((profile.profileSkills||[]).map(norm));
+ const matchedSkills=skills.filter(x=>profileSkills.has(norm(x)));
+ const skillGaps=skills.filter(x=>!profileSkills.has(norm(x)));
+
+ const languageNames=['romanian','russian','english','greek','polish','german','french','dutch','spanish','italian','swedish','norwegian','danish','finnish','czech','hungarian','portuguese','arabic','hebrew','turkish'];
+ const mentionedLanguages=[...new Set([...(job.languages||[]).map(norm),...languageNames.filter(x=>text.includes(x))])];
+ const knownLanguages=mentionedLanguages.filter(x=>profile.languages.includes(x));
+ const languageGaps=mentionedLanguages.filter(x=>!profile.languages.includes(x));
+
+ const expMatches=[...text.matchAll(/\b(?:at least\s*)?(\d{1,2})\+?\s*(?:years?|yrs?)\s+(?:of\s+)?(?:relevant\s+)?(?:professional\s+)?experience\b/gi)];
+ const mentionedExperience=[...new Set(expMatches.map(m=>m[0].replace(/\s+/g,' ').trim()))];
+ const maxRequiredYears=expMatches.reduce((m,x)=>Math.max(m,Number(x[1])||0),0);
+ const experienceGap=maxRequiredYears>(profile.relevantExperienceYears||0)?`${maxRequiredYears}+ years experience requested; profile baseline is ~${profile.relevantExperienceYears}+ relevant years`:null;
+
+ const title=norm(job.title);
+ const seniorityKeywords=['intern','junior','entry','analyst','specialist','senior','lead','manager','head','director','vp','vice president','chief'];
+ const mentionedSeniority=seniorityKeywords.find(x=>title.includes(x))||null;
+ let seniorityGap=null;
+ if(mentionedSeniority&&['vp','vice president','chief'].includes(mentionedSeniority)) seniorityGap=`Seniority: ${mentionedSeniority.toUpperCase()} level is above current profile baseline`;
+
+ const gaps=[
+   ...techGaps.map(x=>`Tech: ${x}`),
+   ...skillGaps.map(x=>`Skill: ${x}`),
+   ...languageGaps.map(x=>`Language: ${x[0].toUpperCase()+x.slice(1)}`),
+   ...(experienceGap?[experienceGap]:[]),
+   ...(seniorityGap?[seniorityGap]:[])
+ ];
+
+ const techFit=tech.length?clamp((matchedTech.length+learningTech.length*.7+transferableTech.length*.55)/tech.length*100):75;
+ const roleHits=profile.roleFamilies.filter(x=>text.includes(x)).length;
+ const roleFit=clamp(55+Math.min(35,roleHits*7)+Math.min(10,matchedSkills.length*2));
+ const languageFit=mentionedLanguages.length?clamp(knownLanguages.length/mentionedLanguages.length*100):90;
+ let seniorityFit=82;
+ if(/director|head of|manager|lead/.test(title))seniorityFit=94;
+ else if(/junior|entry|assistant/.test(title))seniorityFit=58;
+ else if(/senior|specialist|analyst/.test(title))seniorityFit=86;
+ if(seniorityGap) seniorityFit=55;
+
+ return {
+   matchedTech,learningTech,transferableTech,techGaps,
+   matchedSkills,skillGaps,
+   mentionedLanguages,knownLanguages,languageGaps,
+   mentionedExperience,maxRequiredYears,
+   gaps,techFit,roleFit,languageFit,seniorityFit
+ };
+}
+
 function classify(job,fit,priority,profile){
   const text=textFor(job); const roleHits=profile.roleFamilies.filter(x=>text.includes(x)).length; const skillHits=profile.strongSignals.filter(x=>text.includes(x)).length;
   if(priority===0) return profile.taxonomy.BLACK_HOLE;
@@ -81,8 +148,8 @@ export function scoreJob(job,profile=MIHAELA_PROFILE){
   const text=textFor(job);
   const unsupported=unsupportedHardLanguage(text,profile); if(unsupported) return {decision:'REJECT',taxonomy:profile.taxonomy.BLACK_HOLE,priority:0,fit:0,desirability:0,hardReject:`Unsupported language required: ${unsupported}`,flags:[]};
   if(profile.hardTechnicalRejects.some(p=>text.includes(p))) return {decision:'REJECT',taxonomy:profile.taxonomy.BLACK_HOLE,priority:0,fit:0,desirability:0,hardReject:'Python is a hard requirement',flags:[]};
-  const fitR=scoreFit(job,profile), desR=scoreDesirability(job,geography,salary,freshness); const priority=clamp(fitR.score*.62+desR.score*.38);
+  const fitR=scoreFit(job,profile), desR=scoreDesirability(job,geography,salary,freshness), intelligence=intelligenceFor(job,profile); const priority=clamp(fitR.score*.62+desR.score*.38);
   let decision='MAYBE'; if(priority>=85) decision='APPLY_NOW'; else if(priority>=75) decision='APPLY'; else if(fitR.score>=profile.stretch.surfaceFromFit) decision='STRETCH';
   const taxonomy=classify(job,fitR.score,priority,profile);
-  return {decision,taxonomy,fit:fitR.score,desirability:desR.score,priority,flags:[...(salary.flags||[]),...(freshness.flags||[])],salaryStatus:salary.status,freshness:freshness.status,geography:geography.region,reasons:[...fitR.reasons,...desR.reasons],gaps:fitR.gaps};
+  return {decision,taxonomy,fit:fitR.score,desirability:desR.score,priority,intelligence,flags:[...(salary.flags||[]),...(freshness.flags||[])],salaryStatus:salary.status,freshness:freshness.status,geography:geography.region,reasons:[...fitR.reasons,...desR.reasons],gaps:fitR.gaps};
 }
