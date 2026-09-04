@@ -96,3 +96,48 @@ button,select,input,.apply-link{border-color:var(--line)!important}
   .details-grid { grid-template-columns:1fr; }
   .card-actions { grid-template-columns:1fr; }
 }
+/* Ambient space motion — intentionally subtle and entirely behind the UI */
+.stars{
+  animation:starDrift 42s ease-in-out infinite alternate, starBreath 9s ease-in-out infinite;
+}
+.stars::before,
+.stars::after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  pointer-events:none;
+}
+.stars::before{
+  width:340px;height:340px;
+  right:7%;top:24%;
+  border:1px solid rgba(190,153,255,.055);
+  box-shadow:
+    0 0 0 34px rgba(190,153,255,.025),
+    0 0 0 82px rgba(85,216,255,.018);
+  animation:orbitFloat 24s ease-in-out infinite alternate;
+}
+.stars::after{
+  width:2px;height:2px;
+  left:18%;top:31%;
+  background:rgba(255,255,255,.8);
+  box-shadow:
+    18vw 8vh 0 rgba(255,114,210,.55),
+    39vw -12vh 0 rgba(126,232,255,.55),
+    58vw 21vh 0 rgba(255,255,255,.5),
+    72vw -3vh 0 rgba(211,156,255,.55);
+  animation:twinkleField 7s ease-in-out infinite;
+}
+.planet-one{animation:planetHoverOne 18s ease-in-out infinite alternate}
+.planet-two{animation:planetHoverTwo 22s ease-in-out infinite alternate}
+@keyframes starDrift{
+  from{background-position:0 0,37px 59px,91px 21px}
+  to{background-position:18px 10px,24px 74px,104px 8px}
+}
+@keyframes starBreath{0%,100%{opacity:.52}50%{opacity:.68}}
+@keyframes twinkleField{0%,100%{opacity:.35}45%{opacity:.8}52%{opacity:.45}72%{opacity:.7}}
+@keyframes orbitFloat{from{transform:translate3d(0,0,0) rotate(-5deg)}to{transform:translate3d(-22px,14px,0) rotate(5deg)}}
+@keyframes planetHoverOne{from{transform:translate3d(0,0,0)}to{transform:translate3d(-12px,16px,0)}}
+@keyframes planetHoverTwo{from{transform:translate3d(0,0,0)}to{transform:translate3d(14px,-12px,0)}}
+@media(prefers-reduced-motion:reduce){
+  .stars,.stars::before,.stars::after,.planet-one,.planet-two{animation:none!important}
+}
