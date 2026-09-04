@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="app/board.css?v=20260904-demo-legend" />
+  <link rel="stylesheet" href="app/board.css?v=20260904-demo-profile-force2" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop stop-color='%23f6b7ff'/%3E%3Cstop offset='.55' stop-color='%23936cff'/%3E%3Cstop offset='1' stop-color='%233c2b78'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='15' fill='url(%23g)'/%3E%3Cellipse cx='32' cy='32' rx='28' ry='10' fill='none' stroke='%23d9c4ff' stroke-width='3' transform='rotate(-15 32 32)'/%3E%3Ccircle cx='49' cy='19' r='2' fill='%23fff'/%3E%3C/svg%3E">
 </head>
 <body><div class="stars"></div><div class="planet planet-one"></div><div class="planet planet-two"></div>
@@ -57,6 +57,14 @@
       </select>
       <select id="countryFilter" aria-label="Filter by country"><option value="all">All countries</option></select>
       <select id="sortBy" aria-label="Sort jobs"><option value="priority">Highest priority</option><option value="fit">Highest fit</option><option value="newest">Newest found</option></select>
+    </section>
+    <section class="candidate-profile-inline">
+      <div>
+        <div class="eyebrow">PERSONALIZATION LAYER</div>
+        <strong>Every score is calculated against Mihaela's candidate profile.</strong>
+        <span>Roles · skills · languages · seniority · tech stack · geography · salary floor</span>
+      </div>
+      <button id="profileInlineButton" type="button" class="button secondary">View candidate profile</button>
     </section>
     <nav class="tabs" id="tabs" aria-label="Application status"></nav>
     <section id="jobsGrid" class="jobs-grid" aria-live="polite"></section>
@@ -118,6 +126,7 @@
       const close = () => { drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); backdrop.classList.remove('open'); document.body.classList.remove('profile-open'); setTimeout(()=>backdrop.hidden=true,220); };
       document.getElementById('profileButton').addEventListener('click',open);
       document.getElementById('profileContextButton').addEventListener('click',open);
+      document.getElementById('profileInlineButton')?.addEventListener('click',open);
       document.getElementById('profileClose').addEventListener('click',close);
       backdrop.addEventListener('click',close);
       document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
