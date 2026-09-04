@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="app/board.css?v=20260904-demo-intel" />
+  <link rel="stylesheet" href="app/board.css?v=20260904-demo-profile" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop stop-color='%23f6b7ff'/%3E%3Cstop offset='.55' stop-color='%23936cff'/%3E%3Cstop offset='1' stop-color='%233c2b78'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='15' fill='url(%23g)'/%3E%3Cellipse cx='32' cy='32' rx='28' ry='10' fill='none' stroke='%23d9c4ff' stroke-width='3' transform='rotate(-15 32 32)'/%3E%3Ccircle cx='49' cy='19' r='2' fill='%23fff'/%3E%3C/svg%3E">
 </head>
 <body><div class="stars"></div><div class="planet planet-one"></div><div class="planet planet-two"></div>
@@ -34,9 +34,11 @@
         <p class="subtitle astro-tagline">Built around one candidate. Designed around what matters.</p>
       </div>
       <div class="top-actions">
+        <button id="profileButton" class="button secondary profile-button">◉ Candidate Profile</button>
         <button id="resetDemo" class="button secondary">Reset demo</button>
       </div>
     </header>
+    <div class="profile-context"><span>Scored against</span><strong>Mihaela's candidate profile</strong><button id="profileContextButton" type="button">View profile →</button></div>
     <section class="stats" id="stats" aria-label="Board summary"></section>
     <section class="controls">
       <label class="search-wrap"><span class="sr-only">Search jobs</span><input id="searchInput" type="search" placeholder="Search title, company, city…" /></label>
@@ -50,6 +52,26 @@
     <section id="jobsGrid" class="jobs-grid" aria-live="polite"></section>
     <div id="emptyState" class="empty-state" hidden>No jobs match these filters.</div>
   </main>
+  <div id="profileBackdrop" class="profile-backdrop" hidden></div>
+  <aside id="profileDrawer" class="profile-drawer" aria-hidden="true" aria-label="Candidate profile">
+    <div class="profile-drawer-head">
+      <div><div class="eyebrow">MATCHING PROFILE</div><h2>Candidate Profile</h2><p>The configuration AstroJob uses to judge every opportunity.</p></div>
+      <button id="profileClose" class="profile-close" aria-label="Close candidate profile">×</button>
+    </div>
+    <div class="profile-demo-note">Demo profile based on a real candidate configuration.</div>
+    <section class="profile-block"><h3>Target roles</h3><div class="profile-chips"><span>Customer Success</span><span>Customer Operations</span><span>Onboarding</span><span>Sales / Revenue Operations</span><span>Enablement</span><span>Project / Program Management</span></div></section>
+    <div class="profile-two-col">
+      <section class="profile-block"><h3>Priority location</h3><p>🇵🇱 Poland</p></section>
+      <section class="profile-block"><h3>Work preferences</h3><p>Hybrid · Remote · EMEA remote</p></section>
+    </div>
+    <section class="profile-block"><h3>Languages</h3><div class="profile-chips"><span>Romanian · Native</span><span>Russian · Native</span><span>English · Fluent</span><span>Greek · Professional</span></div></section>
+    <section class="profile-block"><h3>Experience</h3><p><strong>7+ years</strong> across Customer Success, Sales & Operations, QA and team leadership.</p></section>
+    <section class="profile-block"><h3>Core strengths</h3><div class="profile-chips"><span>Customer Success</span><span>Onboarding</span><span>Retention</span><span>Escalations</span><span>Process Improvement</span><span>Team Leadership</span><span>CRM Operations</span><span>Analytics</span></div></section>
+    <section class="profile-block"><h3>Tech stack</h3><div class="profile-chips tech"><span>Salesforce</span><span>HubSpot</span><span>Pipedrive</span><span>Zendesk</span><span>Kustomer</span><span>Jira</span><span>Excel / Sheets</span><span>Looker Studio</span><span>Zapier</span><span>Amadeus</span><span>Sabre</span></div></section>
+    <section class="profile-block"><h3>Learning / adjacent</h3><div class="profile-chips learning"><span>SQL</span><span>Power BI</span><span>Tableau</span></div></section>
+    <section class="profile-block"><h3>Poland salary floor</h3><p><strong>10,000 PLN gross / month</strong></p></section>
+    <section class="profile-block scoring"><h3>How AstroJob scores</h3><div><b>Fit</b><span>Role, skills, seniority & language match</span></div><div><b>Desirability</b><span>Location, salary, work model & freshness</span></div><div><b>Priority</b><span>Combined action score</span></div></section>
+  </aside>
   <template id="jobCardTemplate">
     <article class="job-card">
       <div class="card-head">
@@ -78,7 +100,20 @@
       <div class="card-actions"><a class="button primary apply-link" target="_blank" rel="noopener">Open job</a><select class="status-select" aria-label="Update job status"><option value="new">New</option><option value="saved">Saved</option><option value="applied">Applied</option><option value="interview">Interview</option><option value="rejected">Rejected / Skipped</option></select></div>
     </article>
   </template>
-  <script type="module" src="app/board.js?v=20260904-demo-intel"></script>
+  <script>
+    (() => {
+      const drawer = document.getElementById('profileDrawer');
+      const backdrop = document.getElementById('profileBackdrop');
+      const open = () => { drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); backdrop.hidden=false; requestAnimationFrame(()=>backdrop.classList.add('open')); document.body.classList.add('profile-open'); };
+      const close = () => { drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); backdrop.classList.remove('open'); document.body.classList.remove('profile-open'); setTimeout(()=>backdrop.hidden=true,220); };
+      document.getElementById('profileButton').addEventListener('click',open);
+      document.getElementById('profileContextButton').addEventListener('click',open);
+      document.getElementById('profileClose').addEventListener('click',close);
+      backdrop.addEventListener('click',close);
+      document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+    })();
+  </script>
+  <script type="module" src="app/board.js?v=20260904-demo-profile"></script>
   <!-- demo-release: 2026-09-04-intelligence -->
 </body>
 </html>
