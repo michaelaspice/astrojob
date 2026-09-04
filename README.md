@@ -1,32 +1,50 @@
-# JobFlow AI
+# AstroJob 🌌
 
-A small public case study showing how I use AI-assisted email classification to organize job-search activity.
+AstroJob is a personal AI-assisted job discovery and matching system built around a real candidate profile instead of generic keyword matching.
 
 ## What it does
 
-The workflow is designed to:
+- Scores roles across **Fit**, **Desirability**, and **Priority**
+- Classifies opportunities as **🌟 Core Match**, **🚀 Transferable Match**, **🪐 Stretch Match**, **☄️ Wild Card**, or **🕳️ Black Hole**
+- Applies hard rules for salary, geography, posting freshness, language requirements, and core technical mismatches
+- Organizes opportunities through a lightweight application board
+- Explains why each role is or is not a match
 
-- identify job-related emails;
-- classify them as application confirmations, interviews, rejections, or action-required messages;
-- apply a consistent label/status;
-- reduce manual inbox organization;
-- create a foundation for a future application tracker.
+## Search profile
 
-## Why I built it
+### Roles
+Customer-facing and customer-operations work broadly: Customer Success, Support, Customer Excellence, Customer Experience, Customer Operations, Client Services, Onboarding, Implementation, Account Management, Renewals, Service Delivery, Operations, Sales/Revenue Operations, Enablement, Quality, Process Improvement, Business Analysis, Program/Project Management, Team Leadership, and adjacent roles.
 
-I wanted to apply AI to a real recurring workflow in my own life rather than create a purely theoretical demo.
+### Geography
+- **Poland** — on-site, hybrid, or remote; highest priority
+- **Greece** — on-site, hybrid, or remote
+- **Moldova** — on-site, hybrid, or remote
+- **Rest of EMEA** — remote only
 
-## Current scope
+### Salary rules
+- **Poland:** undisclosed allowed; otherwise ≥ 10,000 PLN gross/month or ≥ 120,000 PLN gross/year
+- **Greece:** undisclosed allowed; otherwise ≥ €2,400 gross/month or ≥ €28,000 gross/year
+- **Moldova:** any salary
+- **Rest of EMEA remote:** undisclosed allowed; otherwise ≥ €30,000 gross/year
+- Conflicting monthly/annual salary values are allowed and flagged for review
 
-This repository is intentionally lightweight. The public page documents the workflow and learning process without exposing personal email data.
+### Languages
+Romanian, Russian, English, and Greek are treated as working languages. Other languages are acceptable only when they are not hard requirements.
 
-## Next steps
+### Freshness
+Jobs older than **21 days** are excluded unless renewed or reposted recently.
 
-- Extract company and role automatically
-- Detect interview dates and follow-up deadlines
-- Sync structured fields into a tracker
-- Add reporting on application stages and response rates
+### Technical exclusions
+Python or similar programming skills can appear as nice-to-haves, but roles where Python is a hard core requirement are rejected.
 
-## Public page
+## Current stage
 
-Open `index.html` locally or publish this repository with GitHub Pages.
+The current version is a static GitHub Pages-friendly front end with a configurable matching engine and sample data. **Live job ingestion is the next phase.**
+
+## Roadmap
+1. Connect live job sources
+2. Normalize and deduplicate listings
+3. Auto-score incoming jobs
+4. Push worthwhile opportunities onto the board
+5. Add alerts for high-priority matches
+6. Learn from saved / applied / skipped decisions
