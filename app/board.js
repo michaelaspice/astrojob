@@ -480,8 +480,8 @@ async function importJobAgent(file){
   await loadJobs();
   return{added,updated,skipped,total:apps.length};
 }
-els.jobAgentImport.onclick=()=>els.jobAgentFile.click();
-els.jobAgentFile.onchange=async e=>{
+els.jobAgentImport?.addEventListener('click',()=>els.jobAgentFile?.click());
+if(els.jobAgentFile) els.jobAgentFile.onchange=async e=>{
   const file=e.target.files?.[0];if(!file)return;
   els.jobAgentStatus.textContent='Importing JobAgent applications…';
   try{
