@@ -40,10 +40,10 @@ export const MIHAELA_PROFILE = {
   acceptableTechnicalNiceToHaves: ['sql','python','data analysis','business intelligence','api','automation'],
   stretch: { enabled: true, surfaceFromFit: 70 },
   taxonomy: {
-    CORE: '🌟 Core Match',
-    TRANSFERABLE: '🚀 Transferable Match',
-    STRETCH: '🪐 Stretch Match',
-    WILD_CARD: '☄️ Wild Card',
-    BLACK_HOLE: '🕳️ Black Hole'
+    CORE: 'Core Match',
+    TRANSFERABLE: 'Transferable',
+    STRETCH: 'Stretch',
+    WILD_CARD: 'Wild Card',
+    BLACK_HOLE: 'Black Hole'
   }
 };
