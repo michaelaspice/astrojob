@@ -4,16 +4,23 @@ const EMEA_COUNTRIES = new Set(['Albania','Algeria','Andorra','Angola','Armenia'
 const clamp=(n,min=0,max=100)=>Math.max(min,Math.min(max,Math.round(n)));
 const norm=v=>String(v??'').toLowerCase();
 const textFor=j=>norm([j.title,j.description,j.requirements,j.skills?.join(' '),j.languages?.join(' '),j.industry].filter(Boolean).join(' '));
-const regionFor=c=>['Poland','Greece','Moldova'].includes(c)?c:(EMEA_COUNTRIES.has(c)?'RestOfEMEA':'OUTSIDE_EMEA');
+const regionFor=c=>['Poland','Greece','Moldova'].includes(c)?c:(['Global','Worldwide','Anywhere','Remote'].includes(c)?'RestOfEMEA':(EMEA_COUNTRIES.has(c)?'RestOfEMEA':'OUTSIDE_EMEA'));
 
 export function checkFreshness(job, profile=MIHAELA_PROFILE){
   const posted = job.postedAt ? new Date(job.postedAt) : null;
   const renewed = job.renewedAt ? new Date(job.renewedAt) : null;
   const effective = renewed && !Number.isNaN(renewed) ? renewed : posted;
-  if (!effective || Number.isNaN(effective)) return {allowed:true,status:'DATE_UNKNOWN',flags:['DATE_REVIEW']};
+  if (!effective || Number.isNaN(effective)) return {allowed:true,status:'DATE_UNKNOWN',flags:['DATE_REVIEW'],priorityPenalty:0};
   const ageDays = (Date.now()-effective.getTime())/86400000;
-  if (ageDays <= profile.freshness.maxAgeDays) return {allowed:true,status:renewed?'RECENTLY_RENEWED':'FRESH',ageDays:Math.floor(ageDays),flags:[]};
-  return {allowed:false,status:'STALE',ageDays:Math.floor(ageDays),reason:`Posted more than ${profile.freshness.maxAgeDays} days ago`};
+  if (ageDays <= profile.freshness.maxAgeDays) return {allowed:true,status:renewed?'RECENTLY_RENEWED':'FRESH',ageDays:Math.floor(ageDays),flags:[],priorityPenalty:0};
+  return {
+    allowed:true,
+    status:'STALE',
+    ageDays:Math.floor(ageDays),
+    reason:`Posted more than ${profile.freshness.maxAgeDays} days ago`,
+    flags:[`Posted more than ${profile.freshness.maxAgeDays} days ago`],
+    priorityPenalty:12
+  };
 }
 
 export function checkGeography(job){
@@ -59,26 +66,29 @@ const SKILLS=[
 const TRANSFER_SKILLS=new Set(['Revenue Operations','Program Management']);
 function intelligenceFor(job,profile){
  const text=textFor(job);
+ const memoryText=norm((profile.memoryInsights||[]).join(' '));
  const tech=TECH.filter(([,terms])=>terms.some(t=>text.includes(t))).map(([name])=>name);
- const matchedTech=tech.filter(x=>OWNED_TECH.has(x));
- const learningTech=tech.filter(x=>LEARNING_TECH.has(x));
- const transferableTech=tech.filter(x=>ADJACENT_TECH.has(x));
- const techGaps=tech.filter(x=>!OWNED_TECH.has(x)&&!LEARNING_TECH.has(x)&&!ADJACENT_TECH.has(x));
+ const matchedTech=tech.filter(x=>OWNED_TECH.has(x)||memoryText.includes(norm(x)));
+ const learningTech=tech.filter(x=>!matchedTech.includes(x)&&LEARNING_TECH.has(x));
+ const transferableTech=tech.filter(x=>!matchedTech.includes(x)&&ADJACENT_TECH.has(x));
+ const techGaps=tech.filter(x=>!matchedTech.includes(x)&&!learningTech.includes(x)&&!transferableTech.includes(x));
 
  const skills=SKILLS.filter(([,terms])=>terms.some(t=>text.includes(t))).map(([name])=>name);
  const profileSkills=new Set((profile.profileSkills||[]).map(norm));
- const matchedSkills=skills.filter(x=>profileSkills.has(norm(x)));
- const skillGaps=skills.filter(x=>!profileSkills.has(norm(x)));
+ const matchedSkills=skills.filter(x=>profileSkills.has(norm(x))||memoryText.includes(norm(x)));
+ const skillGaps=skills.filter(x=>!matchedSkills.includes(x));
 
  const languageNames=['romanian','russian','english','greek','polish','german','french','dutch','spanish','italian','swedish','norwegian','danish','finnish','czech','hungarian','portuguese','arabic','hebrew','turkish'];
  const mentionedLanguages=[...new Set([...(job.languages||[]).map(norm),...languageNames.filter(x=>text.includes(x))])];
- const knownLanguages=mentionedLanguages.filter(x=>profile.languages.includes(x));
- const languageGaps=mentionedLanguages.filter(x=>!profile.languages.includes(x));
+ const knownLanguages=mentionedLanguages.filter(x=>profile.languages.includes(x)||memoryText.includes(x));
+ const languageGaps=mentionedLanguages.filter(x=>!knownLanguages.includes(x));
 
  const expMatches=[...text.matchAll(/\b(?:at least\s*)?(\d{1,2})\+?\s*(?:years?|yrs?)\s+(?:of\s+)?(?:relevant\s+)?(?:professional\s+)?experience\b/gi)];
  const mentionedExperience=[...new Set(expMatches.map(m=>m[0].replace(/\s+/g,' ').trim()))];
  const maxRequiredYears=expMatches.reduce((m,x)=>Math.max(m,Number(x[1])||0),0);
- const experienceGap=maxRequiredYears>(profile.relevantExperienceYears||0)?`${maxRequiredYears}+ years experience requested; profile baseline is ~${profile.relevantExperienceYears}+ relevant years`:null;
+ const memoryYears=[...memoryText.matchAll(/\b(\d{1,2})\+?\s*(?:years?|yrs?)/g)].reduce((m,x)=>Math.max(m,Number(x[1])||0),0);
+ const effectiveYears=Math.max(profile.relevantExperienceYears||0,memoryYears);
+ const experienceGap=maxRequiredYears>effectiveYears?`${maxRequiredYears}+ years experience requested; profile baseline is ~${effectiveYears}+ relevant years`:null;
 
  const title=norm(job.title);
  const seniorityKeywords=['intern','junior','entry','analyst','specialist','senior','lead','manager','head','director','vp','vice president','chief'];
@@ -142,14 +152,60 @@ function scoreDesirability(job,geo,salary,freshness){
 }
 
 export function scoreJob(job,profile=MIHAELA_PROFILE){
-  const freshness=checkFreshness(job,profile); if(!freshness.allowed) return {decision:'REJECT',taxonomy:profile.taxonomy.BLACK_HOLE,priority:0,fit:0,desirability:0,hardReject:freshness.reason,flags:[]};
-  const geography=checkGeography(job); if(!geography.allowed) return {decision:'REJECT',taxonomy:profile.taxonomy.BLACK_HOLE,priority:0,fit:0,desirability:0,hardReject:geography.reason,flags:[]};
-  const salary=checkSalary(job,profile); if(!salary.allowed) return {decision:'REJECT',taxonomy:profile.taxonomy.BLACK_HOLE,priority:0,fit:0,desirability:0,hardReject:salary.reason,flags:salary.flags||[]};
+  // Fit and intelligence describe the candidate-role match and are always calculated.
+  // Practical constraints influence desirability, priority and the final decision, but never erase fit.
+  const freshness=checkFreshness(job,profile);
+  const geography=checkGeography(job);
+  const salary=checkSalary(job,profile);
   const text=textFor(job);
-  const unsupported=unsupportedHardLanguage(text,profile); if(unsupported) return {decision:'REJECT',taxonomy:profile.taxonomy.BLACK_HOLE,priority:0,fit:0,desirability:0,hardReject:`Unsupported language required: ${unsupported}`,flags:[]};
-  if(profile.hardTechnicalRejects.some(p=>text.includes(p))) return {decision:'REJECT',taxonomy:profile.taxonomy.BLACK_HOLE,priority:0,fit:0,desirability:0,hardReject:'Python is a hard requirement',flags:[]};
-  const fitR=scoreFit(job,profile), desR=scoreDesirability(job,geography,salary,freshness), intelligence=intelligenceFor(job,profile); const priority=clamp(fitR.score*.62+desR.score*.38);
-  let decision='MAYBE'; if(priority>=85) decision='APPLY_NOW'; else if(priority>=75) decision='APPLY'; else if(fitR.score>=profile.stretch.surfaceFromFit) decision='STRETCH';
-  const taxonomy=classify(job,fitR.score,priority,profile);
-  return {decision,taxonomy,fit:fitR.score,desirability:desR.score,priority,intelligence,flags:[...(salary.flags||[]),...(freshness.flags||[])],salaryStatus:salary.status,freshness:freshness.status,geography:geography.region,reasons:[...fitR.reasons,...desR.reasons],gaps:fitR.gaps};
+  const unsupported=unsupportedHardLanguage(text,profile);
+  const pythonReject=profile.hardTechnicalRejects.some(p=>text.includes(p));
+
+  const fitR=scoreFit(job,profile);
+  const intelligence=intelligenceFor(job,profile);
+  const desR=scoreDesirability(job,geography,salary,freshness);
+
+  const basePriority=clamp(fitR.score*.62+desR.score*.38);
+  let priority=clamp(basePriority-(freshness.priorityPenalty||0));
+
+  const hardReasons=[];
+  if(!geography.allowed) hardReasons.push(geography.reason);
+  if(!salary.allowed) hardReasons.push(salary.reason);
+  if(unsupported) hardReasons.push(`Unsupported language required: ${unsupported}`);
+  if(pythonReject) hardReasons.push('Python is a hard requirement');
+
+  let decision='MAYBE';
+  if(hardReasons.length){
+    decision='REJECT';
+    priority=0;
+  }else if(priority>=85) decision='APPLY_NOW';
+  else if(priority>=75) decision='APPLY';
+  else if(fitR.score>=profile.stretch.surfaceFromFit) decision='STRETCH';
+
+  // Taxonomy reflects the role match itself, not whether a practical rule blocks applying.
+  const taxonomy=classify(job,fitR.score,basePriority,profile);
+
+  const flags=[
+    ...(salary.flags||[]),
+    ...(freshness.flags||[])
+  ];
+
+  const reasons=[...fitR.reasons,...desR.reasons];
+  if(freshness.status==='STALE') reasons.push('Older posting: priority reduced, fit preserved');
+
+  return {
+    decision,
+    taxonomy,
+    fit:fitR.score,
+    desirability:desR.score,
+    priority,
+    intelligence,
+    flags,
+    hardReject:hardReasons.length?hardReasons.join(' · '):undefined,
+    salaryStatus:salary.status,
+    freshness:freshness.status,
+    geography:geography.region,
+    reasons,
+    gaps:fitR.gaps
+  };
 }
