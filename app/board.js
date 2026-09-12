@@ -357,7 +357,7 @@ function renderStatistics(){
 
   els.statisticsView.innerHTML=`
     <div class="statistics-head">
-      <div><div class="eyebrow">INSIGHTS</div><h2>Application Statistics</h2><p>Across ${total} tracked roles.</p></div>
+      <div><h2>Application Statistics</h2><p>Across ${total} tracked roles.</p></div>
     </div>
     <div class="stat-overview">
       <div class="insight-card"><span>Average fit score</span><strong>${avgFit}%</strong><small>${total} analysed roles</small></div>
