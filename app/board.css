@@ -630,3 +630,16 @@ body.pipeline-mode .jobs-grid{display:none!important}
 .statistics-view[hidden]{display:none!important}
 @media(max-width:1050px){.stat-overview{grid-template-columns:repeat(2,1fr)}.statistics-grid{grid-template-columns:1fr}.analytics-panel.wide-panel{grid-column:auto}}
 @media(max-width:620px){.stat-overview{grid-template-columns:1fr 1fr}.bar-row{grid-template-columns:115px 1fr 28px;gap:8px}.statistics-head h2{font-size:24px}}
+
+/* Structured match analysis */
+.match-analysis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.analysis-box{padding:14px;border:1px solid rgba(154,123,255,.14);border-radius:14px;background:rgba(255,255,255,.018)}
+.analysis-box h3{margin:0 0 10px;font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:#b9bfd6}
+.blockers-box{grid-column:1/-1}
+.strengths-box{border-color:rgba(75,209,160,.2)}
+.weaknesses-box{border-color:rgba(230,92,105,.18)}
+.transferable-box{border-color:rgba(104,174,255,.2)}
+.learning-box{border-color:rgba(215,148,61,.2)}
+.blockers-box{border-color:rgba(239,92,123,.28);background:rgba(239,92,123,.035)}
+.blockers-box .intel-empty{color:#7f879f}
+@media(max-width:760px){.match-analysis{grid-template-columns:1fr}.blockers-box{grid-column:auto}}
