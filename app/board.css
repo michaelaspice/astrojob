@@ -588,3 +588,7 @@ body.pipeline-mode .jobs-grid{display:none!important}
 .withdrawal-reason:focus{border-color:rgba(124,168,255,.6);box-shadow:0 0 0 2px rgba(124,168,255,.08)}
 .withdrawal-reason::placeholder{color:#737b98}
 .withdrawal-reason[hidden]{display:none!important}
+
+/* Insights only in expanded job */
+.job-card:not(.expanded-card) .insight-job{display:none!important}
+.expanded-card .insight-job{display:inline-flex!important}
