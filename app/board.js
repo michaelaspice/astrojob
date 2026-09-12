@@ -329,6 +329,25 @@ function blank(){Object.values(fields).forEach(el=>{if(el&&el.tagName!=='SELECT'
 function fill(j){fields.id.value=j.id;fields.url.value=j.url||'';fields.title.value=j.title||'';fields.company.value=j.company||'';fields.country.value=j.country||'';fields.city.value=j.city||'';fields.workModel.value=j.workModel||'Remote';fields.postedAt.value=toDate(j.postedAt);fields.renewedAt.value=toDate(j.renewedAt);fields.currency.value=j.salary?.currency||'';fields.monthly.value=Number.isFinite(j.salary?.monthlyGross)?j.salary.monthlyGross:'';fields.annual.value=Number.isFinite(j.salary?.annualGross)?j.salary.annualGross:'';fields.interest.value=j.interest||'positive';fields.nextAction.value=toDate(j.nextActionAt);fields.languages.value=(j.languages||[]).join(', ');fields.description.value=j.description||'';fields.notes.value=j.notes||''}
 function openDialog(id=null){blank();const j=id?state.jobs.find(x=>x.id===id):null;els.dialogTitle.textContent=j?'Edit job':'Add a job';els.deleteBtn.hidden=!j;if(j)fill(j);els.dialogScore.textContent=j?`${j.score.taxonomy} · Fit ${j.score.fit}% · Desirability ${j.score.desirability}% · Priority ${j.score.priority}% · ${rec(j.score)}`:'Fill in the role and AstroJob will score it when you save.';els.dialog.showModal()}
 function closeDialog(){els.dialog.close()}
+function consumeBookmarkletCapture(){
+  const params=new URLSearchParams(location.search);
+  if(params.get('capture')!=='1')return;
+  const jd=params.get('jd')||'';
+  if(!jd)return;
+  openDialog();
+  fields.description.value=jd;
+  const source=params.get('source')||'';
+  const title=params.get('title')||'';
+  const company=params.get('company')||'';
+  if(source)fields.url.value=source;
+  if(title)fields.title.value=title;
+  if(company)fields.company.value=company;
+  els.importStatus.textContent='✓ Captured from the job page. Review the fields, then save to score this role.';
+  const clean=new URL(location.href);
+  ['capture','jd','source','title','company'].forEach(k=>clean.searchParams.delete(k));
+  history.replaceState({},'',clean.pathname+clean.search+clean.hash);
+}
+
 async function importFromUrl(){
   const url=fields.url.value.trim();
   if(!url){els.importStatus.textContent='Paste a job link first.';return}
@@ -508,7 +527,7 @@ async function seedDemoJobs(){
 }
 try{
   await enter({user:DEMO_USER});
-  if(!state.jobs.length){await seedDemoJobs();await loadJobs()}
+  if(!state.jobs.length){await seedDemoJobs();await loadJobs()};consumeBookmarkletCapture()
 }catch(err){
   console.error('AstroJob demo failed to initialize',err);
   localStorage.removeItem(DEMO_STORAGE);
