@@ -54,7 +54,7 @@ const supabase={
 const STATUS_LABELS={all:'All',new:'New Matches',saved:'Saved',applied:'Applied',screening:'Screening',interview:'Interview',offer:'Offer',signed:'Signed',rejected:'Rejected / Skipped',withdrawn:'Withdrawn',archived:'Archived'};
 const state={jobs:[],status:'all',query:'',decision:'all',country:'all',sort:'priority',view:'board',user:null,profile:structuredClone(MIHAELA_PROFILE),memoryInsights:[]};
 const $=s=>document.querySelector(s);
-const els={authGate:$('#authGate'),appRoot:$('#appRoot'),authForm:$('#authForm'),authEmail:$('#authEmail'),authPassword:$('#authPassword'),authMessage:$('#authMessage'),signUp:$('#signUpButton'),signOut:$('#signOutButton'),grid:$('#jobsGrid'),empty:$('#emptyState'),stats:$('#stats'),tabs:$('#tabs'),search:$('#searchInput'),decision:$('#decisionFilter'),country:$('#countryFilter'),sort:$('#sortBy'),template:$('#jobCardTemplate'),add:$('#addJobButton'),emptyAdd:$('#emptyAddButton'),loadDemo:$('#loadDemoButton'),export:$('#exportButton'),import:$('#importButton'),importFile:$('#importFile'),dialog:$('#jobDialog'),form:$('#jobForm'),close:$('#closeDialog'),cancel:$('#cancelDialog'),deleteBtn:$('#deleteJobButton'),dialogTitle:$('#dialogTitle'),dialogScore:$('#dialogScore'),importUrl:$('#importJobUrl'),importStatus:$('#importJobStatus'),profileButton:$('#profileButton'),profileDialog:$('#profileDialog'),profileForm:$('#profileForm'),closeProfile:$('#closeProfileDialog'),cancelProfile:$('#cancelProfileDialog'),resetProfile:$('#resetProfileButton'),insightDialog:$('#insightDialog'),insightForm:$('#insightForm'),insightJobId:$('#insightJobId'),insightText:$('#insightText'),insightHistory:$('#insightHistory'),closeInsight:$('#closeInsightDialog'),cancelInsight:$('#cancelInsightDialog'),settingsButton:$('#settingsButton'),settingsDialog:$('#settingsDialog'),closeSettings:$('#closeSettingsDialog'),viewSwitch:$('#viewSwitch'),pipeline:$('#pipelineView'),jobDetailDialog:$('#jobDetailDialog'),jobDetailContent:$('#jobDetailContent'),closeJobDetail:$('#closeJobDetailDialog'),matchLegendButton:$('#matchLegendButton'),matchLegendDialog:$('#matchLegendDialog'),closeMatchLegend:$('#closeMatchLegendDialog'),boardViewButton:$('#boardViewButton'),pipelineViewButton:$('#pipelineViewButton')};
+const els={authGate:$('#authGate'),appRoot:$('#appRoot'),authForm:$('#authForm'),authEmail:$('#authEmail'),authPassword:$('#authPassword'),authMessage:$('#authMessage'),signUp:$('#signUpButton'),signOut:$('#signOutButton'),grid:$('#jobsGrid'),empty:$('#emptyState'),stats:$('#stats'),tabs:$('#tabs'),search:$('#searchInput'),decision:$('#decisionFilter'),country:$('#countryFilter'),sort:$('#sortBy'),template:$('#jobCardTemplate'),add:$('#addJobButton'),emptyAdd:$('#emptyAddButton'),loadDemo:$('#loadDemoButton'),export:$('#exportButton'),import:$('#importButton'),importFile:$('#importFile'),dialog:$('#jobDialog'),form:$('#jobForm'),close:$('#closeDialog'),cancel:$('#cancelDialog'),deleteBtn:$('#deleteJobButton'),dialogTitle:$('#dialogTitle'),dialogScore:$('#dialogScore'),importUrl:$('#importJobUrl'),importStatus:$('#importJobStatus'),profileButton:$('#profileButton'),profileDialog:$('#profileDialog'),profileForm:$('#profileForm'),closeProfile:$('#closeProfileDialog'),cancelProfile:$('#cancelProfileDialog'),resetProfile:$('#resetProfileButton'),insightDialog:$('#insightDialog'),insightForm:$('#insightForm'),insightJobId:$('#insightJobId'),insightText:$('#insightText'),insightHistory:$('#insightHistory'),closeInsight:$('#closeInsightDialog'),cancelInsight:$('#cancelInsightDialog'),settingsButton:$('#settingsButton'),settingsDialog:$('#settingsDialog'),closeSettings:$('#closeSettingsDialog'),viewSwitch:$('#viewSwitch'),pipeline:$('#pipelineView'),jobDetailDialog:$('#jobDetailDialog'),jobDetailContent:$('#jobDetailContent'),closeJobDetail:$('#closeJobDetailDialog'),matchLegendButton:$('#matchLegendButton'),matchLegendDialog:$('#matchLegendDialog'),closeMatchLegend:$('#closeMatchLegendDialog'),boardViewButton:$('#boardViewButton'),pipelineViewButton:$('#pipelineViewButton'),statisticsViewButton:$('#statisticsViewButton'),statisticsView:$('#statisticsView')};
 const fields={id:$('#jobId'),url:$('#jobUrl'),title:$('#jobTitle'),company:$('#jobCompany'),country:$('#jobCountry'),city:$('#jobCity'),workModel:$('#jobWorkModel'),postedAt:$('#jobPostedAt'),renewedAt:$('#jobRenewedAt'),currency:$('#jobCurrency'),monthly:$('#jobMonthly'),annual:$('#jobAnnual'),interest:$('#jobInterest'),nextAction:$('#jobNextAction'),languages:$('#jobLanguages'),description:$('#jobDescription'),notes:$('#jobNotes')};
 const profileFields={
   roleFamilies:$('#profileRoleFamilies'),strongSignals:$('#profileStrongSignals'),languages:$('#profileLanguages'),
@@ -293,37 +293,147 @@ function renderPipeline(){
   els.pipeline.appendChild(wrap);
 }
 
+
+function statPct(v){return Math.max(0,Math.min(100,Math.round(Number(v)||0)))}
+function roleArchetype(job){
+  const t=(job.title||'').toLowerCase();
+  if(/support|service desk|contact center|customer care/.test(t))return'Customer Support';
+  if(/renewal|retention/.test(t))return'Renewals & Retention';
+  if(/sales|account executive|business development|presales|pre-sales/.test(t))return'Sales & Commercial';
+  if(/operations|program|project|process|quality|qa/.test(t))return'Operations';
+  if(/customer success|client success|customer experience|customer excellence|account manager|client manager/.test(t))return'Customer Success';
+  if(/lead|manager|head|director/.test(t))return'Leadership';
+  return'Other';
+}
+function renderStatistics(){
+  const jobs=[...state.jobs];
+  const total=jobs.length;
+  const avgFit=total?Math.round(jobs.reduce((s,j)=>s+(Number(j.score?.fit)||0),0)/total):0;
+  const recommended=jobs.filter(j=>['APPLY_NOW','APPLY','STRETCH'].includes(j.score?.decision)).length;
+  const active=jobs.filter(j=>['applied','screening','interview'].includes(j.status)).length;
+  const interviews=jobs.filter(j=>j.status==='interview').length;
+  const offers=jobs.filter(j=>['offer','signed'].includes(j.status)).length;
+
+  const fitBands=[
+    ['≥85% · Exceptional',jobs.filter(j=>(j.score?.fit||0)>=85).length,'strong'],
+    ['70–84% · Strong',jobs.filter(j=>(j.score?.fit||0)>=70&&(j.score?.fit||0)<85).length,'good'],
+    ['55–69% · Partial',jobs.filter(j=>(j.score?.fit||0)>=55&&(j.score?.fit||0)<70).length,'partial'],
+    ['<55% · Weak',jobs.filter(j=>(j.score?.fit||0)<55).length,'weak']
+  ];
+  const matchTypes=['Core Match','Transferable','Stretch','Wild Card','Black Hole'].map(name=>{
+    const count=jobs.filter(j=>String(j.score?.taxonomy||'').replace(/[🌟🚀🪐☄️🕳️⭐✨🔥]/gu,'').trim().toLowerCase().includes(name.replace(' Match','').toLowerCase())).length;
+    return [name,count];
+  });
+
+  const stages=[
+    ['Saved / Prep',jobs.filter(j=>['new','saved'].includes(j.status)).length],
+    ['Applied',jobs.filter(j=>j.status==='applied').length],
+    ['Screening',jobs.filter(j=>j.status==='screening').length],
+    ['Interview',jobs.filter(j=>j.status==='interview').length],
+    ['Offered',jobs.filter(j=>j.status==='offer').length],
+    ['Signed',jobs.filter(j=>j.status==='signed').length]
+  ];
+
+  const archetypes={};
+  jobs.forEach(j=>{const k=roleArchetype(j);archetypes[k]=(archetypes[k]||0)+1});
+  const archetypeRows=Object.entries(archetypes).sort((a,b)=>b[1]-a[1]);
+
+  const withdrawReasons={};
+  jobs.filter(j=>['withdrawn','rejected','archived'].includes(j.status)).forEach(j=>{
+    let r='No reason recorded';
+    const m=String(j.notes||'').match(/Withdrawal reason:\s*(.+)$/mi);
+    if(m?.[1])r=m[1].trim();
+    else if(j.status==='rejected')r='Rejected';
+    else if(j.status==='archived')r='Archived';
+    withdrawReasons[r]=(withdrawReasons[r]||0)+1;
+  });
+  const reasonRows=Object.entries(withdrawReasons).sort((a,b)=>b[1]-a[1]).slice(0,6);
+
+  const maxBand=Math.max(1,...fitBands.map(x=>x[1]));
+  const maxType=Math.max(1,...matchTypes.map(x=>x[1]));
+  const maxStage=Math.max(1,...stages.map(x=>x[1]));
+  const maxArch=Math.max(1,...archetypeRows.map(x=>x[1]));
+  const maxReason=Math.max(1,...reasonRows.map(x=>x[1]));
+
+  els.statisticsView.innerHTML=`
+    <div class="statistics-head">
+      <div><div class="eyebrow">INSIGHTS</div><h2>Application Statistics</h2><p>Across ${total} tracked roles.</p></div>
+    </div>
+    <div class="stat-overview">
+      <div class="insight-card"><span>Average fit score</span><strong>${avgFit}%</strong><small>${total} analysed roles</small></div>
+      <div class="insight-card"><span>Recommended to apply</span><strong>${recommended}</strong><small>${total?Math.round(recommended/total*100):0}% of roles</small></div>
+      <div class="insight-card"><span>Active applications</span><strong>${active}</strong><small>${interviews} currently interviewing</small></div>
+      <div class="insight-card"><span>Offers / signed</span><strong>${offers}</strong><small>Current pipeline outcomes</small></div>
+    </div>
+
+    <div class="statistics-grid">
+      <section class="analytics-panel">
+        <div class="analytics-title">Score distribution</div>
+        ${fitBands.map(([label,count,type])=>`<div class="bar-row"><span>${label}</span><div class="bar-track"><i class="${type}" style="width:${count/maxBand*100}%"></i></div><strong>${count}</strong></div>`).join('')}
+      </section>
+
+      <section class="analytics-panel">
+        <div class="analytics-title">Match classification</div>
+        ${matchTypes.map(([label,count],i)=>`<div class="bar-row"><span>${label}</span><div class="bar-track"><i class="match-${i}" style="width:${count/maxType*100}%"></i></div><strong>${count}</strong></div>`).join('')}
+      </section>
+
+      <section class="analytics-panel wide-panel">
+        <div class="analytics-title">Pipeline funnel</div>
+        <p class="analytics-subtitle">${active} active applications — where they sit in the process.</p>
+        ${stages.map(([label,count],i)=>`<div class="bar-row funnel-row"><span>${label}</span><div class="bar-track"><i class="stage-${i}" style="width:${count/maxStage*100}%"></i></div><strong>${count}</strong></div>`).join('')}
+      </section>
+
+      <section class="analytics-panel">
+        <div class="analytics-title">Role archetypes</div>
+        ${archetypeRows.length?archetypeRows.map(([label,count])=>`<div class="bar-row"><span>${label}</span><div class="bar-track"><i class="archetype" style="width:${count/maxArch*100}%"></i></div><strong>${count}</strong></div>`).join(''):'<div class="analytics-empty">No role data yet.</div>'}
+      </section>
+
+      <section class="analytics-panel">
+        <div class="analytics-title">Exit / archive patterns</div>
+        ${reasonRows.length?reasonRows.map(([label,count])=>`<div class="bar-row"><span title="${escapeHtml(label)}">${escapeHtml(label)}</span><div class="bar-track"><i class="exit" style="width:${count/maxReason*100}%"></i></div><strong>${count}</strong></div>`).join(''):'<div class="analytics-empty">No withdrawn, rejected or archived roles yet.</div>'}
+      </section>
+
+      <section class="analytics-panel wide-panel">
+        <div class="analytics-title">All tracked roles</div>
+        <div class="applications-table">
+          ${jobs.sort((a,b)=>(b.score?.fit||0)-(a.score?.fit||0)).map(j=>`<button type="button" class="analytics-job" data-job-id="${j.id}"><span><strong>${escapeHtml(j.company||'Unknown company')}</strong><small>${escapeHtml(j.title||'Untitled role')}</small></span><span><strong>${j.score?.fit??'—'}%</strong><small>${escapeHtml(STATUS_LABELS[j.status]||j.status||'New')}</small></span></button>`).join('')}
+        </div>
+      </section>
+    </div>`;
+  els.statisticsView.querySelectorAll('.analytics-job').forEach(btn=>btn.onclick=()=>openJobDetail(btn.dataset.jobId));
+}
+
 function setView(view){
-  state.view=view==='pipeline'?'pipeline':'board';
+  state.view=['pipeline','statistics'].includes(view)?view:'board';
   const pipeline=state.view==='pipeline';
+  const statistics=state.view==='statistics';
+  const board=!pipeline&&!statistics;
+
   els.pipeline.hidden=!pipeline;
-  els.grid.hidden=pipeline;
+  els.statisticsView.hidden=!statistics;
+  els.grid.hidden=!board;
   els.pipeline.style.display=pipeline?'block':'none';
-  els.grid.style.display=pipeline?'none':'grid';
+  els.statisticsView.style.display=statistics?'block':'none';
+  els.grid.style.display=board?'grid':'none';
   els.empty.hidden=true;
 
   const controls=document.querySelector('.controls');
-  controls.hidden=pipeline;
-  controls.style.display=pipeline?'none':'grid';
+  controls.hidden=!board;controls.style.display=board?'grid':'none';
+  els.tabs.hidden=!board;els.tabs.style.display=board?'flex':'none';
+  els.stats.hidden=!board;els.stats.style.display=board?'grid':'none';
 
-  els.tabs.hidden=pipeline;
-  els.tabs.style.display=pipeline?'none':'flex';
-
-  els.stats.hidden=pipeline;
-  els.stats.style.display=pipeline?'none':'grid';
-
-  els.boardViewButton.classList.toggle('active',!pipeline);
+  els.boardViewButton.classList.toggle('active',board);
   els.pipelineViewButton.classList.toggle('active',pipeline);
+  els.statisticsViewButton.classList.toggle('active',statistics);
   document.body.classList.toggle('pipeline-mode',pipeline);
+  document.body.classList.toggle('statistics-mode',statistics);
 
-  if(pipeline){
-    renderPipeline();
-  }else{
-    render();
-  }
+  if(pipeline)renderPipeline();
+  else if(statistics)renderStatistics();
+  else render();
 }
 
-function render(){renderTabs();renderStats();if(state.view==='pipeline'){renderPipeline();return}const jobs=filtered();els.grid.innerHTML='';jobs.forEach(j=>els.grid.appendChild(card(j)));els.empty.hidden=jobs.length>0}
+function render(){renderTabs();renderStats();if(state.view==='pipeline'){renderPipeline();return}if(state.view==='statistics'){renderStatistics();return}const jobs=filtered();els.grid.innerHTML='';jobs.forEach(j=>els.grid.appendChild(card(j)));els.empty.hidden=jobs.length>0}
 
 function blank(){Object.values(fields).forEach(el=>{if(el&&el.tagName!=='SELECT')el.value=''});fields.workModel.value='Remote';fields.interest.value='positive';fields.currency.value=''}
 function fill(j){fields.id.value=j.id;fields.url.value=j.url||'';fields.title.value=j.title||'';fields.company.value=j.company||'';fields.country.value=j.country||'';fields.city.value=j.city||'';fields.workModel.value=j.workModel||'Remote';fields.postedAt.value=toDate(j.postedAt);fields.renewedAt.value=toDate(j.renewedAt);fields.currency.value=j.salary?.currency||'';fields.monthly.value=Number.isFinite(j.salary?.monthlyGross)?j.salary.monthlyGross:'';fields.annual.value=Number.isFinite(j.salary?.annualGross)?j.salary.annualGross:'';fields.interest.value=j.interest||'positive';fields.nextAction.value=toDate(j.nextActionAt);fields.languages.value=(j.languages||[]).join(', ');fields.description.value=j.description||'';fields.notes.value=j.notes||''}
@@ -390,6 +500,7 @@ els.closeSettings.onclick=()=>els.settingsDialog.close();
 els.settingsDialog.onclick=e=>{if(e.target===els.settingsDialog)els.settingsDialog.close()};
 els.boardViewButton.onclick=()=>setView('board');
 els.pipelineViewButton.onclick=()=>setView('pipeline');
+els.statisticsViewButton.onclick=()=>setView('statistics');
 els.closeJobDetail.onclick=()=>els.jobDetailDialog.close();
 els.jobDetailDialog.onclick=e=>{if(e.target===els.jobDetailDialog)els.jobDetailDialog.close()};
 els.profileButton.onclick=()=>{fillProfileForm();els.profileDialog.showModal()};
