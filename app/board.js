@@ -216,7 +216,11 @@ tax.classList.add('taxonomy-'+taxonomyKey);if(job.score.priority>=85&&job.score.
  badgeList('.language-badges',langItems,'match');
  const expItems=intel.mentionedExperience||[];
  badgeList('.experience-badges',expItems,'transfer');
- badgeList('.gap-badges',intel.gaps,'gap');
+ badgeList('.strength-badges',intel.strengths,'match');
+ badgeList('.weakness-badges',intel.weaknesses,'gap');
+ badgeList('.transferable-badges',intel.transferable,'transfer');
+ badgeList('.learn-badges',intel.toLearn,'learning');
+ badgeList('.blocker-badges',job.score.hardBlockers||[],'gap');
  const p=node.querySelector('.job-notes-preview');if(job.notes)p.textContent=job.notes.length>180?job.notes.slice(0,180)+'…':job.notes;const link=node.querySelector('.apply-link');link.href=job.url||'#';if(!job.url||job.url==='#'){link.classList.add('disabled');link.textContent='No job link';link.removeAttribute('target')}node.querySelector('.expand-job').onclick=()=>openJobDetail(job.id);node.querySelector('.open-job').onclick=()=>openDialog(job.id);node.querySelector('.insight-job')?.addEventListener('click',()=>openInsightDialog(job.id));const sel=node.querySelector('.status-select'),withdrawal=node.querySelector('.withdrawal-reason');
 sel.value=job.status||'new';
 withdrawal.value=job.withdrawalReason||'';
