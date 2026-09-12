@@ -63,7 +63,7 @@ const ADJACENT_TECH=new Set(['Power BI','Tableau']);
 const SKILLS=[
  ['Customer Success',['customer success']],['Onboarding',['onboarding']],['Implementation',['implementation']],['Account Management',['account management']],['Renewals',['renewal']],['Retention',['retention','churn']],['Escalation Management',['escalation']],['Stakeholder Management',['stakeholder']],['Team Leadership',['team leadership','team lead','people management']],['Coaching',['coaching']],['KPI Management',['kpi']],['CSAT',['csat','customer satisfaction']],['Quality Assurance',['quality assurance']],['Process Improvement',['process improvement']],['SOPs & Playbooks',['sop','playbook']],['Sales Operations',['sales operations']],['Revenue Operations',['revenue operations','revops']],['CRM Operations',['crm operations']],['Data Analysis',['data analysis','analytics']],['Automation',['automation']],['Project Management',['project management','project manager']],['Program Management',['program management','program manager']]
 ];
-const TRANSFER_SKILLS=new Set(['Revenue Operations','Program Management']);
+const TRANSFER_SKILLS=new Set(['Revenue Operations','Program Management','Project Management','Sales Operations','Quality Assurance','Process Improvement','Data Analysis','Automation','Stakeholder Management','Team Leadership','Coaching','CRM Operations']);
 function intelligenceFor(job,profile){
  const text=textFor(job);
  const memoryText=norm((profile.memoryInsights||[]).join(' '));
@@ -77,6 +77,7 @@ function intelligenceFor(job,profile){
  const profileSkills=new Set((profile.profileSkills||[]).map(norm));
  const matchedSkills=skills.filter(x=>profileSkills.has(norm(x))||memoryText.includes(norm(x)));
  const skillGaps=skills.filter(x=>!matchedSkills.includes(x));
+ const transferableSkills=skills.filter(x=>!matchedSkills.includes(x)&&TRANSFER_SKILLS.has(x));
 
  const languageNames=['romanian','russian','english','greek','polish','german','french','dutch','spanish','italian','swedish','norwegian','danish','finnish','czech','hungarian','portuguese','arabic','hebrew','turkish'];
  const mentionedLanguages=[...new Set([...(job.languages||[]).map(norm),...languageNames.filter(x=>text.includes(x))])];
@@ -88,41 +89,58 @@ function intelligenceFor(job,profile){
  const maxRequiredYears=expMatches.reduce((m,x)=>Math.max(m,Number(x[1])||0),0);
  const memoryYears=[...memoryText.matchAll(/\b(\d{1,2})\+?\s*(?:years?|yrs?)/g)].reduce((m,x)=>Math.max(m,Number(x[1])||0),0);
  const effectiveYears=Math.max(profile.relevantExperienceYears||0,memoryYears);
- const experienceGap=maxRequiredYears>effectiveYears?`${maxRequiredYears}+ years experience requested; profile baseline is ~${effectiveYears}+ relevant years`:null;
+ const experienceGap=maxRequiredYears>effectiveYears ? (maxRequiredYears+'+ years experience requested; profile baseline is ~'+effectiveYears+'+ relevant years') : null;
 
  const title=norm(job.title);
- const seniorityKeywords=['intern','junior','entry','analyst','specialist','senior','lead','manager','head','director','vp','vice president','chief'];
+ const seniorityKeywords=['intern','junior','entry','assistant','analyst','specialist','senior','lead','manager','head','director','vp','vice president','chief'];
  const mentionedSeniority=seniorityKeywords.find(x=>title.includes(x))||null;
+ const seniorityMap={intern:35,junior:55,entry:55,assistant:60,analyst:84,specialist:90,senior:94,lead:98,manager:100,head:90,director:72,vp:48,'vice president':48,chief:42};
+ let seniorityFit=mentionedSeniority?(seniorityMap[mentionedSeniority]??82):86;
  let seniorityGap=null;
- if(mentionedSeniority&&['vp','vice president','chief'].includes(mentionedSeniority)) seniorityGap=`Seniority: ${mentionedSeniority.toUpperCase()} level is above current profile baseline`;
+ if(['director','vp','vice president','chief'].includes(mentionedSeniority)) seniorityGap='Seniority: '+mentionedSeniority.toUpperCase()+' level is above current profile baseline';
+
+ const roleHits=[...new Set(profile.roleFamilies.filter(x=>text.includes(x)))];
+ const roleFit=roleHits.length?clamp(58+Math.min(42,roleHits.length*9)):45;
+ const techFit=tech.length?clamp((matchedTech.length+learningTech.length*.72+transferableTech.length*.6)/tech.length*100):null;
+ const skillFit=skills.length?clamp((matchedSkills.length+transferableSkills.length*.65)/skills.length*100):null;
+ const languageFit=mentionedLanguages.length?clamp(knownLanguages.length/mentionedLanguages.length*100):null;
+ const experienceFit=maxRequiredYears?clamp(Math.min(1,effectiveYears/maxRequiredYears)*100):null;
+
+ const strengths=[
+   ...(roleHits.length?['Direct role overlap: '+roleHits.slice(0,4).join(', ')]:[]),
+   ...matchedSkills.slice(0,6).map(x=>'Proven skill: '+x),
+   ...matchedTech.slice(0,5).map(x=>'Known system: '+x),
+   ...(knownLanguages.length?['Language match: '+knownLanguages.map(x=>x[0].toUpperCase()+x.slice(1)).join(', ')]:[]),
+   ...(maxRequiredYears&&effectiveYears>=maxRequiredYears?['Experience requirement met: '+effectiveYears+'+ years vs '+maxRequiredYears+'+ requested']:[]),
+   ...(seniorityFit>=90?['Seniority aligns well with the role']:[])
+ ];
+
+ const transferable=[...transferableSkills,...transferableTech,...learningTech.map(x=>x+' (already in learning path)')];
+ const weaknesses=[
+   ...skillGaps.filter(x=>!transferableSkills.includes(x)).slice(0,6).map(x=>'Limited evidence: '+x),
+   ...(experienceGap?[experienceGap]:[]),
+   ...(seniorityGap?[seniorityGap]:[])
+ ];
+ const toLearn=[...learningTech,...techGaps,...skillGaps.filter(x=>!transferableSkills.includes(x)).slice(0,5)];
 
  const gaps=[
-   ...techGaps.map(x=>`Tech: ${x}`),
-   ...skillGaps.map(x=>`Skill: ${x}`),
-   ...languageGaps.map(x=>`Language: ${x[0].toUpperCase()+x.slice(1)}`),
+   ...techGaps.map(x=>'Tech: '+x),
+   ...skillGaps.map(x=>'Skill: '+x),
+   ...languageGaps.map(x=>'Language: '+x[0].toUpperCase()+x.slice(1)),
    ...(experienceGap?[experienceGap]:[]),
    ...(seniorityGap?[seniorityGap]:[])
  ];
 
- const techFit=tech.length?clamp((matchedTech.length+learningTech.length*.7+transferableTech.length*.55)/tech.length*100):75;
- const roleHits=profile.roleFamilies.filter(x=>text.includes(x)).length;
- const roleFit=clamp(55+Math.min(35,roleHits*7)+Math.min(10,matchedSkills.length*2));
- const languageFit=mentionedLanguages.length?clamp(knownLanguages.length/mentionedLanguages.length*100):90;
- let seniorityFit=82;
- if(/director|head of|manager|lead/.test(title))seniorityFit=94;
- else if(/junior|entry|assistant/.test(title))seniorityFit=58;
- else if(/senior|specialist|analyst/.test(title))seniorityFit=86;
- if(seniorityGap) seniorityFit=55;
-
  return {
    matchedTech,learningTech,transferableTech,techGaps,
-   matchedSkills,skillGaps,
+   matchedSkills,skillGaps,transferableSkills,
    mentionedLanguages,knownLanguages,languageGaps,
    mentionedExperience,maxRequiredYears,
+   roleHits,skillFit,experienceFit,
+   strengths,weaknesses,transferable,toLearn,
    gaps,techFit,roleFit,languageFit,seniorityFit
  };
 }
-
 function classify(job,fit,priority,profile){
   const text=textFor(job); const roleHits=profile.roleFamilies.filter(x=>text.includes(x)).length; const skillHits=profile.strongSignals.filter(x=>text.includes(x)).length;
   if(priority===0) return profile.taxonomy.BLACK_HOLE;
@@ -133,15 +151,26 @@ function classify(job,fit,priority,profile){
   return profile.taxonomy.BLACK_HOLE;
 }
 
-function scoreFit(job,profile){
-  const text=textFor(job); let score=38; const reasons=[]; const gaps=[];
-  const roleHits=profile.roleFamilies.filter(t=>text.includes(t)); score+=Math.min(28,roleHits.length*7); if(roleHits.length) reasons.push(`Role overlap: ${roleHits.slice(0,4).join(', ')}`);
-  const strong=profile.strongSignals.filter(t=>text.includes(t)); score+=Math.min(34,strong.length*4); if(strong.length) reasons.push(`Skill overlap: ${strong.slice(0,6).join(', ')}`);
-  const langs=profile.languages.filter(t=>text.includes(t)); if(langs.length){score+=Math.min(10,langs.length*3);reasons.push(`Language advantage: ${langs.join(', ')}`)}
-  if(text.includes('sql')){score+=2;gaps.push('SQL may need role-specific depth')}
-  return {score:clamp(score),reasons,gaps};
+function scoreFit(job,profile,intelligence){
+  const i=intelligence;
+  const dimensions=[
+    ['role',i.roleFit,35],
+    ['skills',i.skillFit,30],
+    ['seniority',i.seniorityFit,15],
+    ['tech',i.techFit,10],
+    ['language',i.languageFit,10]
+  ].filter(([,v])=>Number.isFinite(v));
+  if(Number.isFinite(i.experienceFit))dimensions.push(['experience',i.experienceFit,15]);
+  const weight=dimensions.reduce((sum,[,,w])=>sum+w,0)||1;
+  const raw=dimensions.reduce((sum,[,v,w])=>sum+v*w,0)/weight;
+  const reasons=[];
+  if(i.roleFit>=80)reasons.push('Strong role-family alignment');
+  if((i.skillFit??0)>=75)reasons.push('Strong skill coverage');
+  if((i.techFit??0)>=80)reasons.push('Strong systems / tooling coverage');
+  if((i.languageFit??0)===100&&i.mentionedLanguages.length)reasons.push('Language requirements covered');
+  if(i.seniorityFit>=90)reasons.push('Seniority aligns with profile');
+  return {score:clamp(raw),reasons,gaps:i.weaknesses||[]};
 }
-
 function scoreDesirability(job,geo,salary,freshness){
   let score=60; const reasons=[];
   if(geo.region==='Poland'){score+=25;reasons.push('Poland priority')} else if(['Greece','Moldova'].includes(geo.region)) score+=10; else score+=8;
@@ -161,8 +190,8 @@ export function scoreJob(job,profile=MIHAELA_PROFILE){
   const unsupported=unsupportedHardLanguage(text,profile);
   const pythonReject=profile.hardTechnicalRejects.some(p=>text.includes(p));
 
-  const fitR=scoreFit(job,profile);
   const intelligence=intelligenceFor(job,profile);
+  const fitR=scoreFit(job,profile,intelligence);
   const desR=scoreDesirability(job,geography,salary,freshness);
 
   const basePriority=clamp(fitR.score*.62+desR.score*.38);
@@ -202,6 +231,7 @@ export function scoreJob(job,profile=MIHAELA_PROFILE){
     intelligence,
     flags,
     hardReject:hardReasons.length?hardReasons.join(' · '):undefined,
+    hardBlockers:hardReasons,
     salaryStatus:salary.status,
     freshness:freshness.status,
     geography:geography.region,
