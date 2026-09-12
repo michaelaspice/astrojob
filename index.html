@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AstroJob — Mission Control Demo</title>
+  <title>AstroJob — Personal Job Search</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="app/board.css?v=20260904-demo-profile-force2" />
+  <link rel="stylesheet" href="app/board.css?v=20260912-demo-mirror" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop stop-color='%23f6b7ff'/%3E%3Cstop offset='.55' stop-color='%23936cff'/%3E%3Cstop offset='1' stop-color='%233c2b78'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='15' fill='url(%23g)'/%3E%3Cellipse cx='32' cy='32' rx='28' ry='10' fill='none' stroke='%23d9c4ff' stroke-width='3' transform='rotate(-15 32 32)'/%3E%3Ccircle cx='49' cy='19' r='2' fill='%23fff'/%3E%3C/svg%3E">
 </head>
-<body><div class="stars"></div><div class="planet planet-one"></div><div class="planet planet-two"></div>
+<body><section id="authGate" class="auth-gate" hidden style="display:none"><div class="auth-card"><div class="eyebrow astro-title auth-logo">ASTROJOB</div><p class="auth-kicker">PERSONAL MISSION CONTROL</p><h1>Your job search.<br>Your universe.</h1><p class="auth-copy">Sign in to access your private application board.</p><form id="authForm"><label>Email<input id="authEmail" type="email" autocomplete="email" required placeholder="you@example.com"></label><label>Password<input id="authPassword" type="password" autocomplete="current-password" required minlength="6" placeholder="••••••••"></label><button id="authSubmit" class="button primary" type="submit">Sign in</button><button id="signUpButton" class="button secondary" type="button">Create my account</button><p id="authMessage" class="auth-message"></p></form></div></section><div id="appRoot"><div class="stars"></div><div class="planet planet-one"></div><div class="planet planet-two"></div>
   <div class="satellite-flight" aria-hidden="true" style="position:fixed;left:-140px;bottom:-100px;width:110px;height:72px;pointer-events:none;">
     <svg class="satellite" viewBox="0 0 140 90" width="110" height="72" role="presentation" style="width:110px;height:72px;display:block;">
       <defs>
@@ -34,22 +34,22 @@
         <p class="subtitle astro-tagline">Built around one candidate. Designed around what matters.</p>
       </div>
       <div class="top-actions">
-        <button id="profileButton" class="button secondary profile-button">◉ Candidate Profile</button>
-        <button id="resetDemo" class="button secondary">Reset demo</button>
+        <button id="profileButton" class="button secondary">👤 Profile</button>
+        <button id="addJobButton" class="button primary">＋ Add job</button>
+        <button id="signOutButton" class="button secondary">Reset demo</button>
+        <button id="settingsButton" class="button secondary">⚙ Settings</button>
+        <input id="importFile" type="file" accept="application/json" hidden>
+        <input id="jobAgentFile" type="file" accept="application/json" hidden>
       </div>
     </header>
-    <div class="profile-context"><span>Scored against</span><strong>Mihaela's candidate profile</strong><button id="profileContextButton" type="button">View profile →</button></div>
     <section class="stats" id="stats" aria-label="Board summary"></section>
-    <section class="match-legend" aria-label="Match classification legend">
-      <div class="legend-label">MATCH LEGEND</div>
-      <div class="legend-items">
-        <div class="legend-item"><span class="legend-orb core">☀</span><span><strong>Core Match</strong><small>Strong direct fit — prioritize</small></span></div>
-        <div class="legend-item"><span class="legend-orb transferable">↗</span><span><strong>Transferable</strong><small>Strong adjacent experience</small></span></div>
-        <div class="legend-item"><span class="legend-orb stretch">✦</span><span><strong>Stretch</strong><small>Good fit with some growth</small></span></div>
-        <div class="legend-item"><span class="legend-orb wildcard">✧</span><span><strong>Wild Card</strong><small>Interesting non-obvious match</small></span></div>
-        <div class="legend-item"><span class="legend-orb blackhole">●</span><span><strong>Black Hole</strong><small>Poor fit or hard-rule conflict</small></span></div>
-      </div>
-    </section>
+    <div class="view-row">
+      <nav class="view-switch" id="viewSwitch" aria-label="AstroJob view">
+        <button type="button" id="boardViewButton" class="view-button active" data-view="board">Board</button>
+        <button type="button" id="pipelineViewButton" class="view-button" data-view="pipeline">Pipeline</button>
+      </nav>
+      <button type="button" id="matchLegendButton" class="button secondary match-legend-button">View Match Legend</button>
+    </div>
     <section class="controls">
       <label class="search-wrap"><span class="sr-only">Search jobs</span><input id="searchInput" type="search" placeholder="Search title, company, city…" /></label>
       <select id="decisionFilter" aria-label="Filter by decision">
@@ -58,38 +58,16 @@
       <select id="countryFilter" aria-label="Filter by country"><option value="all">All countries</option></select>
       <select id="sortBy" aria-label="Sort jobs"><option value="priority">Highest priority</option><option value="fit">Highest fit</option><option value="newest">Newest found</option></select>
     </section>
-    <section class="candidate-profile-inline">
-      <div>
-        <div class="eyebrow">PERSONALIZATION LAYER</div>
-        <strong>Every score is calculated against Mihaela's candidate profile.</strong>
-        <span>Roles · skills · languages · seniority · tech stack · geography · salary floor</span>
-      </div>
-      <button id="profileInlineButton" type="button" class="button secondary">View candidate profile</button>
-    </section>
     <nav class="tabs" id="tabs" aria-label="Application status"></nav>
     <section id="jobsGrid" class="jobs-grid" aria-live="polite"></section>
-    <div id="emptyState" class="empty-state" hidden>No jobs match these filters.</div>
+    <section id="pipelineView" class="pipeline-view" hidden aria-live="polite"></section>
+    <div id="emptyState" class="empty-state" hidden>
+      <strong>No jobs here yet.</strong>
+      <span>Add a role and AstroJob will score it against your profile and hard rules.</span>
+      <button id="emptyAddButton" class="button primary">＋ Add your first job</button>
+      <button id="loadDemoButton" class="button secondary">Load demo jobs</button>
+    </div>
   </main>
-  <div id="profileBackdrop" class="profile-backdrop" hidden></div>
-  <aside id="profileDrawer" class="profile-drawer" aria-hidden="true" aria-label="Candidate profile">
-    <div class="profile-drawer-head">
-      <div><div class="eyebrow">MATCHING PROFILE</div><h2>Candidate Profile</h2><p>The configuration AstroJob uses to judge every opportunity.</p></div>
-      <button id="profileClose" class="profile-close" aria-label="Close candidate profile">×</button>
-    </div>
-    <div class="profile-demo-note">Demo profile based on a real candidate configuration.</div>
-    <section class="profile-block"><h3>Target roles</h3><div class="profile-chips"><span>Customer Success</span><span>Customer Operations</span><span>Onboarding</span><span>Sales / Revenue Operations</span><span>Enablement</span><span>Project / Program Management</span></div></section>
-    <div class="profile-two-col">
-      <section class="profile-block"><h3>Priority location</h3><p>🇵🇱 Poland</p></section>
-      <section class="profile-block"><h3>Work preferences</h3><p>Hybrid · Remote · EMEA remote</p></section>
-    </div>
-    <section class="profile-block"><h3>Languages</h3><div class="profile-chips"><span>Romanian · Native</span><span>Russian · Native</span><span>English · Fluent</span><span>Greek · Professional</span></div></section>
-    <section class="profile-block"><h3>Experience</h3><p><strong>7+ years</strong> across Customer Success, Sales & Operations, QA and team leadership.</p></section>
-    <section class="profile-block"><h3>Core strengths</h3><div class="profile-chips"><span>Customer Success</span><span>Onboarding</span><span>Retention</span><span>Escalations</span><span>Process Improvement</span><span>Team Leadership</span><span>CRM Operations</span><span>Analytics</span></div></section>
-    <section class="profile-block"><h3>Tech stack</h3><div class="profile-chips tech"><span>Salesforce</span><span>HubSpot</span><span>Pipedrive</span><span>Zendesk</span><span>Kustomer</span><span>Jira</span><span>Excel / Sheets</span><span>Looker Studio</span><span>Zapier</span><span>Amadeus</span><span>Sabre</span></div></section>
-    <section class="profile-block"><h3>Learning / adjacent</h3><div class="profile-chips learning"><span>SQL</span><span>Power BI</span><span>Tableau</span></div></section>
-    <section class="profile-block"><h3>Poland salary floor</h3><p><strong>10,000 PLN gross / month</strong></p></section>
-    <section class="profile-block scoring"><h3>How AstroJob scores</h3><div><b>Fit</b><span>Role, skills, seniority & language match</span></div><div><b>Desirability</b><span>Location, salary, work model & freshness</span></div><div><b>Priority</b><span>Combined action score</span></div></section>
-  </aside>
   <template id="jobCardTemplate">
     <article class="job-card">
       <div class="card-head">
@@ -99,40 +77,169 @@
       </div>
       <div class="scores"><div class="score"><span>Fit</span><strong class="fit-score"></strong></div><div class="score"><span>Desirability</span><strong class="desirability-score"></strong></div><div class="score"><span>Priority</span><strong class="priority-score"></strong></div></div>
       <div class="salary-row"></div><div class="flags"></div>
-      <div class="intel-panel">
-        <div class="intel-scores">
-          <div><span>Tech fit</span><strong class="tech-fit">—</strong></div>
-          <div><span>Role fit</span><strong class="role-fit">—</strong></div>
-          <div><span>Seniority fit</span><strong class="seniority-fit">—</strong></div>
-          <div><span>Language fit</span><strong class="language-fit">—</strong></div>
-        </div>
-        <div class="intel-section"><h3>Tech Stack / Systems</h3><div class="tech-badges intel-badges"></div></div>
-        <div class="intel-columns">
-          <div><h3>Matched Skills</h3><div class="matched-badges intel-badges"></div></div>
-          <div><h3>Languages Mentioned</h3><div class="language-badges intel-badges"></div></div>
-          <div><h3>Mentioned Experience</h3><div class="experience-badges intel-badges"></div></div>
-        </div>
-        <div class="intel-section gap-section"><h3>Gaps to Fill</h3><div class="gap-badges intel-badges"></div></div>
-      </div>
+<div class="intel-panel">
+ <div class="intel-scores"><div><span>Tech fit</span><strong class="tech-fit">—</strong></div><div><span>Role fit</span><strong class="role-fit">—</strong></div><div><span>Seniority fit</span><strong class="seniority-fit">—</strong></div><div><span>Language fit</span><strong class="language-fit">—</strong></div></div>
+ <div class="intel-section"><h3>Tech Stack / Systems</h3><div class="tech-badges intel-badges"></div></div>
+ <div class="intel-columns">
+  <div><h3>Matched Skills</h3><div class="matched-badges intel-badges"></div></div>
+  <div><h3>Languages Mentioned</h3><div class="language-badges intel-badges"></div></div>
+  <div><h3>Mentioned Experience</h3><div class="experience-badges intel-badges"></div></div>
+</div>
+<div class="intel-section gap-section"><h3>Gaps to Fill</h3><div class="gap-badges intel-badges"></div></div>
+</div>
       <details class="match-details"><summary>Why this match</summary><div class="details-grid"><div><h3>Strong signals</h3><ul class="reasons-list"></ul></div><div><h3>Watch-outs</h3><ul class="gaps-list"></ul></div></div></details>
-      <div class="card-actions"><a class="button primary apply-link" target="_blank" rel="noopener">Open job</a><select class="status-select" aria-label="Update job status"><option value="new">New</option><option value="saved">Saved</option><option value="applied">Applied</option><option value="interview">Interview</option><option value="rejected">Rejected / Skipped</option></select></div>
+      <div class="job-notes-preview"></div>
+      <div class="card-actions">
+        <button type="button" class="button primary expand-job">Expand</button>
+        <button type="button" class="button secondary open-job">Open job</button>
+        <a class="button secondary apply-link" target="_blank" rel="noopener">Open job link</a>
+        <button class="button secondary insight-job">Add additional insights</button>
+        <select class="status-select" aria-label="Update job status">
+          <option value="new">New</option><option value="saved">Saved</option><option value="applied">Applied</option><option value="screening">Screening</option><option value="interview">Interview</option><option value="offer">Offer</option><option value="signed">Signed</option><option value="rejected">Rejected / Skipped</option><option value="withdrawn">Withdrawn</option><option value="archived">Archived</option>
+        </select>
+        <input type="text" class="withdrawal-reason" placeholder="Reason (optional)" aria-label="Withdrawal reason" maxlength="240" hidden>
+      </div>
     </article>
   </template>
-  <script>
-    (() => {
-      const drawer = document.getElementById('profileDrawer');
-      const backdrop = document.getElementById('profileBackdrop');
-      const open = () => { drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); backdrop.hidden=false; requestAnimationFrame(()=>backdrop.classList.add('open')); document.body.classList.add('profile-open'); };
-      const close = () => { drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); backdrop.classList.remove('open'); document.body.classList.remove('profile-open'); setTimeout(()=>backdrop.hidden=true,220); };
-      document.getElementById('profileButton').addEventListener('click',open);
-      document.getElementById('profileContextButton').addEventListener('click',open);
-      document.getElementById('profileInlineButton')?.addEventListener('click',open);
-      document.getElementById('profileClose').addEventListener('click',close);
-      backdrop.addEventListener('click',close);
-      document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
-    })();
-  </script>
-  <script type="module" src="app/board.js?v=20260904-demo-profile"></script>
-  <!-- demo-release: 2026-09-04-intelligence -->
+
+  <dialog id="jobDetailDialog" class="job-detail-dialog">
+      <div class="job-detail-shell">
+        <button type="button" id="closeJobDetailDialog" class="job-detail-close" aria-label="Close">×</button>
+        <div id="jobDetailContent"></div>
+      </div>
+    </dialog>
+
+  <dialog id="jobDialog" class="job-dialog">
+    <form id="jobForm" method="dialog">
+      <div class="dialog-head">
+        <div>
+          <div class="eyebrow">ASTROJOB INPUT</div>
+          <h2 id="dialogTitle">Add a job</h2>
+        </div>
+        <button type="button" id="closeDialog" class="icon-button" aria-label="Close">×</button>
+      </div>
+
+      <input type="hidden" id="jobId">
+      <div class="form-grid">
+        <label class="wide">Job URL
+  <div class="url-import-row">
+    <input id="jobUrl" type="url" placeholder="https://..." />
+    <button type="button" id="importJobUrl" class="button secondary">✨ Import from link</button>
+  </div>
+  <small id="importJobStatus" class="import-job-status"></small>
+</label>
+        <label>Job title<input id="jobTitle" required /></label>
+        <label>Company<input id="jobCompany" required /></label>
+        <label>Country<input id="jobCountry" required placeholder="Poland" /></label>
+        <label>City<input id="jobCity" placeholder="Warsaw" /></label>
+        <label>Work model<select id="jobWorkModel"><option>On-site</option><option>Hybrid</option><option selected>Remote</option></select></label>
+        <label>Posted date<input id="jobPostedAt" type="date" /></label>
+        <label>Renewed / reposted<input id="jobRenewedAt" type="date" /></label>
+        <label>Salary currency<select id="jobCurrency"><option value="">Undisclosed</option><option>PLN</option><option>EUR</option><option>USD</option><option>GBP</option></select></label>
+        <label>Monthly gross<input id="jobMonthly" type="number" min="0" step="1" placeholder="10000" /></label>
+        <label>Annual gross<input id="jobAnnual" type="number" min="0" step="1" placeholder="120000" /></label>
+        <label>Personal interest<select id="jobInterest"><option value="love">Love this</option><option value="positive" selected>Interested</option><option value="neutral">Neutral</option><option value="low">Not excited</option></select></label>
+        <label>Next action date<input id="jobNextAction" type="date" /></label>
+        <label class="wide">Languages mentioned<input id="jobLanguages" placeholder="English, Romanian" /></label>
+        <label class="wide">Description / requirements<textarea id="jobDescription" rows="8" placeholder="Paste the job description here. AstroJob scores this text."></textarea></label>
+        <label class="wide">Your notes<textarea id="jobNotes" rows="4" placeholder="Recruiter, salary discussion, interview notes, concerns, follow-up..."></textarea></label>
+      </div>
+      <div class="dialog-score" id="dialogScore">Fill in the role and AstroJob will score it when you save.</div>
+      <div class="dialog-actions">
+        <button type="button" id="deleteJobButton" class="button danger" hidden>Delete</button>
+        <div class="dialog-actions-right">
+          <button type="button" id="cancelDialog" class="button secondary">Cancel</button>
+          <button type="submit" class="button primary">Save & score</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+  <dialog id="profileDialog" class="job-dialog profile-dialog">
+    <form id="profileForm" method="dialog">
+      <div class="dialog-head">
+        <div><div class="eyebrow">CANDIDATE PROFILE</div><h2>Your AstroJob profile</h2></div>
+        <button type="button" id="closeProfileDialog" class="icon-button" aria-label="Close">×</button>
+      </div>
+      <p class="profile-help">These settings drive scoring. Edit them whenever your goals, skills, salary floor or location preferences change.</p>
+      <div class="profile-grid">
+        <label class="wide">Role families<textarea id="profileRoleFamilies" rows="5" placeholder="customer success, onboarding, operations..."></textarea></label>
+        <label class="wide">Strong signals<textarea id="profileStrongSignals" rows="5" placeholder="renewals, Salesforce, CSAT..."></textarea></label>
+        <label>Known languages<input id="profileLanguages" placeholder="English, Romanian, Russian, Greek"></label>
+        <label>Relevant experience years<input id="profileExperienceYears" type="number" min="0" max="40" step="1"></label>
+        <label class="wide">Profile skills<textarea id="profileSkills" rows="5"></textarea></label>
+        <label class="wide">Hard technical rejects<input id="profileHardTech" placeholder="python required, advanced python required"></label>
+        <label>Max posting age (days)<input id="profileFreshness" type="number" min="1" max="180"></label>
+        <label>Poland monthly min (PLN)<input id="profilePolandMonthly" type="number" min="0"></label>
+        <label>Poland annual min (PLN)<input id="profilePolandAnnual" type="number" min="0"></label>
+        <label>Greece monthly min (EUR)<input id="profileGreeceMonthly" type="number" min="0"></label>
+        <label>Greece annual min (EUR)<input id="profileGreeceAnnual" type="number" min="0"></label>
+        <label>Other EMEA annual min (EUR)<input id="profileEmeaAnnual" type="number" min="0"></label>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" id="resetProfileButton" class="button secondary">Reset to default</button>
+        <div class="dialog-actions-right">
+          <button type="button" id="cancelProfileDialog" class="button secondary">Cancel</button>
+          <button type="submit" class="button primary">Save profile & rescore</button>
+        </div>
+      </div>
+    </form>
+  </dialog></div>
+
+  <dialog id="matchLegendDialog" class="job-dialog match-legend-dialog">
+    <div class="dialog-head">
+      <div>
+        <div class="eyebrow">MATCH LEGEND</div>
+        <h2>How AstroJob classifies matches</h2>
+      </div>
+      <button type="button" id="closeMatchLegendDialog" class="icon-button" aria-label="Close">×</button>
+    </div>
+    <div class="match-legend-list cosmic-legend">
+      <div class="legend-item"><span class="legend-orb core">☀</span><span><strong>Core Match</strong><small>Strong direct fit — prioritize</small></span></div>
+      <div class="legend-item"><span class="legend-orb transferable">◒</span><span><strong>Transferable</strong><small>Strong adjacent experience</small></span></div>
+      <div class="legend-item"><span class="legend-orb stretch">◉</span><span><strong>Stretch</strong><small>Good fit with some growth</small></span></div>
+      <div class="legend-item"><span class="legend-orb wildcard">◆</span><span><strong>Wild Card</strong><small>Interesting non-obvious match</small></span></div>
+      <div class="legend-item"><span class="legend-orb blackhole">◉</span><span><strong>Black Hole</strong><small>Poor fit or hard-rule conflict</small></span></div>
+    </div>
+  </dialog>
+
+  <dialog id="settingsDialog" class="job-dialog settings-dialog">
+    <div class="dialog-head">
+      <div><div class="eyebrow">ASTROJOB SETTINGS</div><h2>Settings</h2></div>
+      <button type="button" id="closeSettingsDialog" class="icon-button" aria-label="Close">×</button>
+    </div>
+    <p class="profile-help">Backup, restore and maintenance tools for your AstroJob workspace.</p>
+    <div class="settings-list">
+      <div class="settings-row"><div><strong>Export backup</strong><span>Download your saved jobs as a JSON backup.</span></div><button id="exportButton" class="button secondary">Export</button></div>
+      <div class="settings-row"><div><strong>Import backup</strong><span>Restore jobs from an AstroJob JSON backup.</span></div><button id="importButton" class="button secondary">Import</button></div>
+      <div class="settings-row"><div><strong>Import from JobAgent</strong><span>Bring in your JobAgent applications, statuses, job descriptions, source links and follow-up dates. Existing jobs are updated instead of duplicated.</span></div><button id="jobAgentImportButton" class="button secondary">Import JobAgent</button></div>
+      <div id="jobAgentImportStatus" class="settings-note"></div>
+    </div>
+  </dialog>
+
+  <dialog id="insightDialog" class="job-dialog insight-dialog">
+    <form id="insightForm" method="dialog">
+      <div class="dialog-head">
+        <div>
+          <div class="eyebrow">MEMORY CORE</div>
+          <h2>Add additional insights</h2>
+        </div>
+        <button type="button" id="closeInsightDialog" class="icon-button" aria-label="Close">×</button>
+      </div>
+      <p class="profile-help">Add context AstroJob does not know yet. This job will be rescored immediately, and the insight will become part of your candidate memory for future applications.</p>
+      <input type="hidden" id="insightJobId">
+      <label class="wide insight-label">What should AstroJob know?
+        <textarea id="insightText" rows="7" maxlength="3000" placeholder="Example: I have managed executive stakeholders and multi-team escalations at June Homes, including Product, Engineering, Finance and Legal."></textarea>
+      </label>
+      <div id="insightHistory" class="insight-history"></div>
+      <div class="dialog-actions">
+        <div></div>
+        <div class="dialog-actions-right">
+          <button type="button" id="cancelInsightDialog" class="button secondary">Cancel</button>
+          <button type="submit" class="button primary">Save to Memory Core & rescore</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+  <script type="module" src="app/board.js?v=20260912-demo-mirror"></script>
 </body>
 </html>
