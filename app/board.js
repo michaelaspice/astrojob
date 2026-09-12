@@ -54,7 +54,7 @@ const supabase={
 const STATUS_LABELS={all:'All',new:'New Matches',saved:'Saved',applied:'Applied',screening:'Screening',interview:'Interview',offer:'Offer',signed:'Signed',rejected:'Rejected / Skipped',withdrawn:'Withdrawn',archived:'Archived'};
 const state={jobs:[],status:'all',query:'',decision:'all',country:'all',sort:'priority',view:'board',user:null,profile:structuredClone(MIHAELA_PROFILE),memoryInsights:[]};
 const $=s=>document.querySelector(s);
-const els={authGate:$('#authGate'),appRoot:$('#appRoot'),authForm:$('#authForm'),authEmail:$('#authEmail'),authPassword:$('#authPassword'),authMessage:$('#authMessage'),signUp:$('#signUpButton'),signOut:$('#signOutButton'),grid:$('#jobsGrid'),empty:$('#emptyState'),stats:$('#stats'),tabs:$('#tabs'),search:$('#searchInput'),decision:$('#decisionFilter'),country:$('#countryFilter'),sort:$('#sortBy'),template:$('#jobCardTemplate'),add:$('#addJobButton'),emptyAdd:$('#emptyAddButton'),loadDemo:$('#loadDemoButton'),export:$('#exportButton'),import:$('#importButton'),importFile:$('#importFile'),dialog:$('#jobDialog'),form:$('#jobForm'),close:$('#closeDialog'),cancel:$('#cancelDialog'),deleteBtn:$('#deleteJobButton'),dialogTitle:$('#dialogTitle'),dialogScore:$('#dialogScore'),importUrl:$('#importJobUrl'),importStatus:$('#importJobStatus'),profileButton:$('#profileButton'),profileDialog:$('#profileDialog'),profileForm:$('#profileForm'),closeProfile:$('#closeProfileDialog'),cancelProfile:$('#cancelProfileDialog'),resetProfile:$('#resetProfileButton'),insightDialog:$('#insightDialog'),insightForm:$('#insightForm'),insightJobId:$('#insightJobId'),insightText:$('#insightText'),insightHistory:$('#insightHistory'),closeInsight:$('#closeInsightDialog'),cancelInsight:$('#cancelInsightDialog'),settingsButton:$('#settingsButton'),settingsDialog:$('#settingsDialog'),closeSettings:$('#closeSettingsDialog'),jobAgentImport:$('#jobAgentImportButton'),jobAgentFile:$('#jobAgentFile'),jobAgentStatus:$('#jobAgentImportStatus'),viewSwitch:$('#viewSwitch'),pipeline:$('#pipelineView'),jobDetailDialog:$('#jobDetailDialog'),jobDetailContent:$('#jobDetailContent'),closeJobDetail:$('#closeJobDetailDialog'),matchLegendButton:$('#matchLegendButton'),matchLegendDialog:$('#matchLegendDialog'),closeMatchLegend:$('#closeMatchLegendDialog'),boardViewButton:$('#boardViewButton'),pipelineViewButton:$('#pipelineViewButton')};
+const els={authGate:$('#authGate'),appRoot:$('#appRoot'),authForm:$('#authForm'),authEmail:$('#authEmail'),authPassword:$('#authPassword'),authMessage:$('#authMessage'),signUp:$('#signUpButton'),signOut:$('#signOutButton'),grid:$('#jobsGrid'),empty:$('#emptyState'),stats:$('#stats'),tabs:$('#tabs'),search:$('#searchInput'),decision:$('#decisionFilter'),country:$('#countryFilter'),sort:$('#sortBy'),template:$('#jobCardTemplate'),add:$('#addJobButton'),emptyAdd:$('#emptyAddButton'),loadDemo:$('#loadDemoButton'),export:$('#exportButton'),import:$('#importButton'),importFile:$('#importFile'),dialog:$('#jobDialog'),form:$('#jobForm'),close:$('#closeDialog'),cancel:$('#cancelDialog'),deleteBtn:$('#deleteJobButton'),dialogTitle:$('#dialogTitle'),dialogScore:$('#dialogScore'),importUrl:$('#importJobUrl'),importStatus:$('#importJobStatus'),profileButton:$('#profileButton'),profileDialog:$('#profileDialog'),profileForm:$('#profileForm'),closeProfile:$('#closeProfileDialog'),cancelProfile:$('#cancelProfileDialog'),resetProfile:$('#resetProfileButton'),insightDialog:$('#insightDialog'),insightForm:$('#insightForm'),insightJobId:$('#insightJobId'),insightText:$('#insightText'),insightHistory:$('#insightHistory'),closeInsight:$('#closeInsightDialog'),cancelInsight:$('#cancelInsightDialog'),settingsButton:$('#settingsButton'),settingsDialog:$('#settingsDialog'),closeSettings:$('#closeSettingsDialog'),viewSwitch:$('#viewSwitch'),pipeline:$('#pipelineView'),jobDetailDialog:$('#jobDetailDialog'),jobDetailContent:$('#jobDetailContent'),closeJobDetail:$('#closeJobDetailDialog'),matchLegendButton:$('#matchLegendButton'),matchLegendDialog:$('#matchLegendDialog'),closeMatchLegend:$('#closeMatchLegendDialog'),boardViewButton:$('#boardViewButton'),pipelineViewButton:$('#pipelineViewButton')};
 const fields={id:$('#jobId'),url:$('#jobUrl'),title:$('#jobTitle'),company:$('#jobCompany'),country:$('#jobCountry'),city:$('#jobCity'),workModel:$('#jobWorkModel'),postedAt:$('#jobPostedAt'),renewedAt:$('#jobRenewedAt'),currency:$('#jobCurrency'),monthly:$('#jobMonthly'),annual:$('#jobAnnual'),interest:$('#jobInterest'),nextAction:$('#jobNextAction'),languages:$('#jobLanguages'),description:$('#jobDescription'),notes:$('#jobNotes')};
 const profileFields={
   roleFamilies:$('#profileRoleFamilies'),strongSignals:$('#profileStrongSignals'),languages:$('#profileLanguages'),
@@ -75,11 +75,11 @@ function fillProfileForm(){
   profileFields.skills.value=listToText(p.profileSkills);
   profileFields.hardTech.value=listToText(p.hardTechnicalRejects);
   profileFields.freshness.value=p.freshness?.maxAgeDays??21;
-  profileFields.polandMonthly.value=p.salaryRules?.Poland?.monthlyGrossMin??10000;
-  profileFields.polandAnnual.value=p.salaryRules?.Poland?.annualGrossMin??120000;
-  profileFields.greeceMonthly.value=p.salaryRules?.Greece?.monthlyGrossMin??2400;
-  profileFields.greeceAnnual.value=p.salaryRules?.Greece?.annualGrossMin??28000;
-  profileFields.emeaAnnual.value=p.salaryRules?.RestOfEMEA?.annualGrossMin??30000;
+  if(profileFields.polandMonthly)profileFields.polandMonthly.value=p.salaryRules?.Poland?.monthlyGrossMin??10000;
+  if(profileFields.polandAnnual)profileFields.polandAnnual.value=p.salaryRules?.Poland?.annualGrossMin??120000;
+  if(profileFields.greeceMonthly)profileFields.greeceMonthly.value=p.salaryRules?.Greece?.monthlyGrossMin??2400;
+  if(profileFields.greeceAnnual)profileFields.greeceAnnual.value=p.salaryRules?.Greece?.annualGrossMin??28000;
+  if(profileFields.emeaAnnual)profileFields.emeaAnnual.value=p.salaryRules?.RestOfEMEA?.annualGrossMin??30000;
 }
 function profileFromForm(){
   const p=cloneDefaultProfile();
@@ -90,11 +90,11 @@ function profileFromForm(){
   p.profileSkills=textToList(profileFields.skills.value).map(x=>x.toLowerCase());
   p.hardTechnicalRejects=textToList(profileFields.hardTech.value).map(x=>x.toLowerCase());
   p.freshness.maxAgeDays=Number(profileFields.freshness.value)||21;
-  p.salaryRules.Poland.monthlyGrossMin=Number(profileFields.polandMonthly.value)||0;
-  p.salaryRules.Poland.annualGrossMin=Number(profileFields.polandAnnual.value)||0;
-  p.salaryRules.Greece.monthlyGrossMin=Number(profileFields.greeceMonthly.value)||0;
-  p.salaryRules.Greece.annualGrossMin=Number(profileFields.greeceAnnual.value)||0;
-  p.salaryRules.RestOfEMEA.annualGrossMin=Number(profileFields.emeaAnnual.value)||0;
+  if(profileFields.polandMonthly)p.salaryRules.Poland.monthlyGrossMin=Number(profileFields.polandMonthly.value)||0;
+  if(profileFields.polandAnnual)p.salaryRules.Poland.annualGrossMin=Number(profileFields.polandAnnual.value)||0;
+  if(profileFields.greeceMonthly)p.salaryRules.Greece.monthlyGrossMin=Number(profileFields.greeceMonthly.value)||0;
+  if(profileFields.greeceAnnual)p.salaryRules.Greece.annualGrossMin=Number(profileFields.greeceAnnual.value)||0;
+  if(profileFields.emeaAnnual)p.salaryRules.RestOfEMEA.annualGrossMin=Number(profileFields.emeaAnnual.value)||0;
   return p;
 }
 async function loadProfile(){
@@ -480,29 +480,39 @@ async function importJobAgent(file){
   await loadJobs();
   return{added,updated,skipped,total:apps.length};
 }
-els.jobAgentImport?.addEventListener('click',()=>els.jobAgentFile?.click());
-if(els.jobAgentFile) els.jobAgentFile.onchange=async e=>{
-  const file=e.target.files?.[0];if(!file)return;
-  els.jobAgentStatus.textContent='Importing JobAgent applications…';
-  try{
-    const r=await importJobAgent(file);
-    els.jobAgentStatus.textContent='✓ JobAgent import complete: '+r.added+' added · '+r.updated+' existing jobs updated · '+r.total+' processed.';
-  }catch(err){
-    els.jobAgentStatus.textContent='Import failed: '+err.message;
-  }
-  e.target.value='';
-};
+
 els.loadDemo.onclick=async()=>{const res=await fetch('./data/sample-jobs.json'),jobs=await res.json();for(const raw of jobs){const j=enrich({...raw,status:'new',foundAt:new Date().toISOString()}),{error}=await supabase.from('astrojob_jobs').insert(toRow(j));if(error)return alert(error.message)}await loadJobs()};
 
-await enter({user:DEMO_USER});
-if(!state.jobs.length){
-  const res=await fetch('./data/sample-jobs.json');
-  const jobs=await res.json();
-  const demoStatuses=['saved','applied','applied','interview','applied','rejected','screening','interview','offer','new','withdrawn','archived'];
+async function seedDemoJobs(){
+  let jobs=[];
+  try{
+    const res=await fetch('./data/sample-jobs.json',{cache:'no-store'});
+    if(res.ok)jobs=await res.json();
+  }catch(err){console.warn('Sample job fetch failed; using built-in demo jobs.',err)}
+  if(!Array.isArray(jobs)||!jobs.length){
+    jobs=[
+      {title:'Customer Success Enablement Manager',company:'NovaTech',city:'Warsaw',country:'Poland',workModel:'Hybrid',postedAt:'2026-09-02',description:'Customer success enablement, onboarding, playbooks, Salesforce, HubSpot, analytics, retention and cross-functional operations. English required.',languages:['English'],salary:{},url:'#'},
+      {title:'Renewals Manager',company:'OrbitPay',city:'Krakow',country:'Poland',workModel:'Hybrid',postedAt:'2026-09-05',description:'Own renewals, retention, account health, stakeholder management and CRM workflows for SaaS customers.',languages:['English'],salary:{},url:'#'},
+      {title:'Customer Support Operations Lead',company:'Helios',city:'Athens',country:'Greece',workModel:'Hybrid',postedAt:'2026-09-04',description:'Lead support operations, CSAT, quality assurance, coaching, documentation and escalation management.',languages:['English','Greek'],salary:{},url:'#'},
+      {title:'Customer Success Manager',company:'Andromeda',city:'Warsaw',country:'Poland',workModel:'Remote',postedAt:'2026-09-06',description:'Customer success, onboarding, renewals, retention, adoption and executive stakeholder management.',languages:['English'],salary:{},url:'#'},
+      {title:'Client Operations Manager',company:'Cosmos Group',city:'Chisinau',country:'Moldova',workModel:'On-site',postedAt:'2026-09-03',description:'Client operations, account management, onboarding, team leadership and process improvement.',languages:['Romanian','Russian','English'],salary:{},url:'#'},
+      {title:'Technical Customer Analyst',company:'BlackHole Labs',city:'Warsaw',country:'Poland',workModel:'Hybrid',postedAt:'2026-09-02',description:'Advanced Python required. Build production Python pipelines and technical customer workflows.',languages:['English'],salary:{},url:'#'}
+    ];
+  }
+  const statuses=['saved','applied','screening','interview','offer','rejected'];
   for(let i=0;i<jobs.length;i++){
     const raw=jobs[i];
-    const j=enrich({...raw,status:demoStatuses[i%demoStatuses.length],foundAt:raw.postedAt||new Date().toISOString()});
+    const j=enrich({...raw,status:statuses[i%statuses.length],foundAt:raw.postedAt||new Date().toISOString()});
     await supabase.from('astrojob_jobs').insert(toRow(j));
   }
+}
+try{
+  await enter({user:DEMO_USER});
+  if(!state.jobs.length){await seedDemoJobs();await loadJobs()}
+}catch(err){
+  console.error('AstroJob demo failed to initialize',err);
+  localStorage.removeItem(DEMO_STORAGE);
+  await enter({user:DEMO_USER});
+  await seedDemoJobs();
   await loadJobs();
 }
